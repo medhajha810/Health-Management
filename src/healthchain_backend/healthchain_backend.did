@@ -1,0 +1,16 @@
+type HealthRecord = record {
+    id : text;
+    date : nat64;
+    record_type : text;
+    description : text;
+    doctor : text;
+    patient : principal;
+};
+
+service : {
+    "create_record" : (text, text, text) -> (HealthRecord);
+    "get_health_records" : () -> (vec HealthRecord) query;
+    "get_record" : (text) -> (opt HealthRecord) query;
+    "update_record" : (text, text, text, text) -> (bool);
+    "delete_record" : (text) -> (bool);
+} 

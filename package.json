@@ -1,0 +1,32 @@
+{
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
+  "name": "Health-Management",
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "prebuild": "npm run prebuild --workspaces --if-present",
+    "pretest": "npm run prebuild --workspaces --if-present",
+    "start": "npm start --workspaces --if-present",
+    "test": "npm test --workspaces --if-present"
+  },
+  "type": "module",
+  "workspaces": [
+    "src/Health-Management-frontend"
+  ],
+  "dependencies": {
+    "@dfinity/auth-client": "^2.3.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.8",
+    "@mui/material": "^6.4.8",
+    "@mui/x-date-pickers": "^7.0.0",
+    "date-fns": "^3.3.1",
+    "react-router-dom": "^7.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.11",
+    "@types/react-router-dom": "^5.3.3"
+  }
+}

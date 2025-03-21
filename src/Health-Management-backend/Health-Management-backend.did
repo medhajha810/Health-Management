@@ -1,0 +1,28 @@
+type AccessLevel = variant {
+    read;
+    write;
+    admin;
+};
+
+type MedicalRecord = record {
+    id: text;
+    patientId: principal;
+    data: blob;
+    timestamp: int;
+    metadata: text;
+    accessList: vec record { principal; AccessLevel };
+};
+
+type Result = variant {
+    Ok: text;
+    Err: text;
+};
+
+service : {
+    createRecord: (record: record { data: blob; metadata: text }) -> (Result);
+    getRecord: (id: text) -> (opt MedicalRecord);
+    updateRecord: (record: record { id: text; data: blob; metadata: text }) -> (bool);
+    grantAccess: (recordId: text; target: principal; level: AccessLevel) -> (bool);
+    revokeAccess: (recordId: text; target: principal) -> (bool);
+    getPatientRecords: () -> (vec MedicalRecord);
+} 
