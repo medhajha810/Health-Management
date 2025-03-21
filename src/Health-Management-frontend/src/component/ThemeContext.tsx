@@ -45,6 +45,84 @@ export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({ c
             default: darkMode ? '#121212' : '#f5f5f5',
             paper: darkMode ? '#1e1e1e' : '#fff',
           },
+          text: {
+            primary: darkMode ? '#ffffff' : 'rgba(0, 0, 0, 0.87)',
+            secondary: darkMode ? '#c5c5c5' : 'rgba(0, 0, 0, 0.6)',
+          },
+          // Ensure alerts and other components have proper contrast in dark mode
+          success: {
+            main: darkMode ? '#66bb6a' : '#43a047',
+          },
+          error: {
+            main: darkMode ? '#f44336' : '#d32f2f',
+          },
+          warning: {
+            main: darkMode ? '#ffb74d' : '#f57c00',
+          },
+          info: {
+            main: darkMode ? '#29b6f6' : '#0288d1',
+          },
+        },
+        components: {
+          MuiButton: {
+            styleOverrides: {
+              root: {
+                color: darkMode ? 'inherit' : undefined,
+              },
+            },
+          },
+          MuiIconButton: {
+            styleOverrides: {
+              root: {
+                color: darkMode ? 'inherit' : undefined,
+              },
+            },
+          },
+          MuiPaper: {
+            styleOverrides: {
+              root: {
+                backgroundImage: 'none',
+              },
+            },
+          },
+          MuiAlert: {
+            styleOverrides: {
+              message: {
+                color: darkMode ? '#fff' : undefined
+              },
+              standardSuccess: {
+                color: darkMode ? '#fff' : undefined,
+                '& .MuiAlert-icon': {
+                  color: darkMode ? '#fff' : undefined
+                }
+              },
+              standardError: {
+                color: darkMode ? '#fff' : undefined,
+                '& .MuiAlert-icon': {
+                  color: darkMode ? '#fff' : undefined
+                }
+              },
+              standardWarning: {
+                color: darkMode ? '#fff' : undefined,
+                '& .MuiAlert-icon': {
+                  color: darkMode ? '#fff' : undefined
+                }
+              },
+              standardInfo: {
+                color: darkMode ? '#fff' : undefined,
+                '& .MuiAlert-icon': {
+                  color: darkMode ? '#fff' : undefined
+                }
+              },
+            },
+          },
+          MuiChip: {
+            styleOverrides: {
+              root: {
+                color: darkMode ? '#ffffff' : undefined,
+              },
+            },
+          },
         },
       }),
     [darkMode]

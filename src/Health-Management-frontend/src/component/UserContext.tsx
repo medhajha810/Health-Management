@@ -13,9 +13,11 @@ export interface UserProfile {
   };
   birthDate?: string;
   bloodType?: string;
-  allergies?: string[];
-  conditions?: string[];
-  medications?: string[];
+  allergies: string[];
+  conditions: string[];
+  medications: string[];
+  abhaId?: string;
+  abhaCardLinked?: boolean;
 }
 
 interface UserContextType {

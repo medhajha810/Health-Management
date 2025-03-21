@@ -9,10 +9,16 @@
       "dependencies": [
         "healthchain_backend"
       ],
+      "frontend": {
+        "entrypoint": "src/Health-Management-frontend/dist/index.html"
+      },
       "source": [
-        "src/Health-Management-frontend/dist/assets"
+        "src/Health-Management-frontend/dist"
       ],
-      "type": "assets"
+      "type": "assets",
+      "build": [
+        "cd src/Health-Management-frontend && npm install && npm run build"
+      ]
     },
     "internet_identity": {
       "type": "custom",
