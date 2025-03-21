@@ -10,40 +10,36 @@ import {
   Paper,
   Button,
   Typography,
-  CircularProgress,
-  Box,
-  Alert
+  Box
 } from '@mui/material';
-import { useAuth } from '../App';
+import useAuth from '../App';
 
 interface HealthRecord {
   id: string;
-  date: bigint;
-  record_type: string;
+  date: string;
+  type: string;
   description: string;
   doctor: string;
-  patient: any;
 }
 
 const RecordList: React.FC = () => {
   const navigate = useNavigate();
-  const { actor } = useAuth();
+  const { actor } : any = useAuth();
   const [records, setRecords] = useState<HealthRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchRecords();
-  }, [actor]);
+  }, []);
 
   const fetchRecords = async () => {
     try {
-      if (!actor) return;
-      const result = await actor.get_health_records();
-      setRecords(result);
+      if (actor) {
+        const records = await actor.getHealthRecords();
+        setRecords(records);
+      }
     } catch (error) {
-      setError('Failed to load records');
-      console.error('Error fetching records:', error);
+      console.error('Failed to fetch records:', error);
     } finally {
       setLoading(false);
     }
@@ -54,47 +50,23 @@ const RecordList: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert severity="error" sx={{ mt: 2 }}>
-        {error}
-      </Alert>
-    );
-  }
-
-  if (records.length === 0) {
-    return (
-      <div>
-        <Typography variant="h4" gutterBottom>
-          Health Records
-        </Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={() => navigate('/records/new')}
-          sx={{ mb: 2 }}
-        >
-          Add New Record
-        </Button>
-        <Alert severity="info">
-          You don't have any health records yet. Click 'Add New Record' to create one.
-        </Alert>
-      </div>
-    );
+    return <Typography>Loading records...</Typography>;
   }
 
   return (
     <div>
-      <Typography variant="h4" gutterBottom>
-        Health Records
-      </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h4" gutterBottom>
+            Health Records
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate('/')}
+          >
+            Home
+          </Button>
+        </Box>
       <Button 
         variant="contained" 
         color="primary" 
@@ -103,27 +75,42 @@ const RecordList: React.FC = () => {
       >
         Add New Record
       </Button>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)', borderRadius: 2, overflow: 'hidden' }}>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Doctor</TableCell>
-              <TableCell>Actions</TableCell>
+        <TableHead sx={{ backgroundColor: '#1976d2' }}>
+        <TableRow>
+        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Type</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Doctor</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {records.map((record) => (
-              <TableRow key={record.id}>
-                <TableCell>{new Date(Number(record.date) / 1000000).toLocaleDateString()}</TableCell>
-                <TableCell>{record.record_type}</TableCell>
+          {records.map((record, index) => (
+              <TableRow 
+                key={record.id}
+                sx={{ 
+                  backgroundColor: index % 2 === 0 ? '#f5f5f5' : 'white',
+                  '&:hover': { backgroundColor: '#e3f2fd' }
+                }}
+              >
+                <TableCell>{new Date(Number(record.date) / 1000000).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'short', 
+                  day: 'numeric' 
+                })}</TableCell>
+                <TableCell>{record.type}</TableCell>
                 <TableCell>{record.doctor}</TableCell>
                 <TableCell>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
                     onClick={() => handleViewRecord(record.id)}
+                    sx={{ 
+                      textTransform: 'none',
+                      boxShadow: 'none',
+                      '&:hover': { boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }
+                    }}
                   >
                     View Details
                   </Button>
