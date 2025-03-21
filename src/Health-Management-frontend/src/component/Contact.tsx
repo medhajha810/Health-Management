@@ -13,7 +13,8 @@ import {
   TextField,
   IconButton,
   Snackbar,
-  Alert
+  Alert,
+  CardHeader
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -23,6 +24,7 @@ import SendIcon from '@mui/icons-material/Send';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import HelpIcon from '@mui/icons-material/Help';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { useTheme } from './ThemeContext';
 
 const Contact: React.FC = () => {
   const navigate = useNavigate();
@@ -33,6 +35,7 @@ const Contact: React.FC = () => {
     message: ''
   });
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const { darkMode } = useTheme();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -124,7 +127,7 @@ const Contact: React.FC = () => {
                       Helpline Number
                     </Typography>
                     <Typography variant="body1">
-                      +1 (800) 123-4567
+                      +91 895 021 4195
                     </Typography>
                   </Box>
                 </Box>
@@ -138,7 +141,7 @@ const Contact: React.FC = () => {
                       WhatsApp Support
                     </Typography>
                     <Typography variant="body1">
-                      +1 (888) 987-6543
+                      +91 870 968 4588
                     </Typography>
                   </Box>
                 </Box>
@@ -152,7 +155,7 @@ const Contact: React.FC = () => {
                       Email Support
                     </Typography>
                     <Typography variant="body1">
-                      support@healthhub.com
+                      medhajha810@gmail.com
                     </Typography>
                   </Box>
                 </Box>
@@ -204,6 +207,7 @@ const Contact: React.FC = () => {
                       textTransform: 'none',
                       fontWeight: 'bold'
                     }}
+                    onClick={() => navigate('/records/faq')}
                   >
                     View FAQs
                   </Button>
@@ -219,9 +223,9 @@ const Contact: React.FC = () => {
                     <Typography variant="h6" fontWeight="bold">Visit Us</Typography>
                   </Box>
                   <Typography variant="body2" color="text.secondary" paragraph>
-                    Health Hub Headquarters<br />
-                    123 Medical Plaza, Suite 400<br />
-                    San Francisco, CA 94107
+                    Lovely Professional University<br />
+                    Grand Trunk Road, Phagwara<br />
+                    Punjab, 144411
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     <strong>Hours:</strong> Monday - Friday: 9 AM - 6 PM
@@ -302,17 +306,21 @@ const Contact: React.FC = () => {
                   <Button
                     type="submit"
                     variant="contained"
-                    color="primary"
-                    size="large"
-                    endIcon={<SendIcon />}
+                    fullWidth
                     sx={{
-                      borderRadius: 2,
+                      mt: 3,
+                      mb: 2,
                       py: 1.5,
-                      px: 4,
-                      textTransform: 'none',
+                      backgroundImage: darkMode 
+                        ? 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)' 
+                        : 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                      color: '#ffffff',
                       fontWeight: 'bold',
-                      backgroundImage: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                      boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+                      borderRadius: 8,
+                      boxShadow: '0 4px 20px rgba(33, 150, 243, 0.4)',
+                      '&:hover': {
+                        boxShadow: '0 6px 25px rgba(33, 150, 243, 0.6)',
+                      }
                     }}
                   >
                     Send Message

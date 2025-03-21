@@ -31,10 +31,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import HomeIcon from '@mui/icons-material/Home';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import SyncIcon from '@mui/icons-material/Sync';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import AttachmentIcon from '@mui/icons-material/Attachment';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import PersonIcon from '@mui/icons-material/Person';
+import ShareIcon from '@mui/icons-material/Share';
+import { formatDate } from '../utils/formatDate';
+import { useTheme } from './ThemeContext';
 
 interface HealthRecord {
   id: string;
-  date: bigint;
+  date: string | bigint;
   record_type: string;
   description: string;
   doctor: string;
@@ -85,10 +95,69 @@ const RecordDetail: React.FC = () => {
   const [abhaRecords, setAbhaRecords] = useState<AbhaRecord[]>([]);
   const [abhaLinked, setAbhaLinked] = useState(false);
   const [syncingAbha, setSyncingAbha] = useState(false);
+  const { darkMode } = useTheme();
 
+  // Add debugging function
+  const debugStorageIssues = () => {
+    try {
+      console.log('RecordDetail: Debug Storage - Current ID:', id);
+      
+      // Check sessionStorage
+      const keys = Object.keys(sessionStorage);
+      console.log('RecordDetail: All sessionStorage keys:', keys);
+      
+      const currentRecordRaw = sessionStorage.getItem('currentRecord');
+      console.log('RecordDetail: Raw currentRecord in sessionStorage:', currentRecordRaw);
+      
+      if (currentRecordRaw) {
+        try {
+          const parsedRecord = JSON.parse(currentRecordRaw);
+          console.log('RecordDetail: Parsed record:', parsedRecord);
+          
+          // Verify if parsed record has all required fields
+          if (!parsedRecord.id || !parsedRecord.date || !parsedRecord.record_type || !parsedRecord.doctor) {
+            console.error('RecordDetail: Parsed record is missing required fields');
+          }
+        } catch (e) {
+          console.error('RecordDetail: Failed to parse record from sessionStorage:', e);
+        }
+      }
+      
+      // Check localStorage
+      const localRecords = localStorage.getItem('health_records');
+      if (localRecords) {
+        try {
+          const parsedRecords = JSON.parse(localRecords);
+          console.log(`RecordDetail: Found ${parsedRecords.length} records in localStorage`);
+          
+          if (id) {
+            const matchingRecord = parsedRecords.find((r: any) => r.id === id);
+            console.log('RecordDetail: Matching record in localStorage:', matchingRecord);
+          }
+        } catch (e) {
+          console.error('RecordDetail: Failed to parse records from localStorage:', e);
+        }
+      } else {
+        console.log('RecordDetail: No health_records found in localStorage');
+      }
+    } catch (e) {
+      console.error('RecordDetail: Error in debugStorageIssues:', e);
+    }
+  };
+   
   useEffect(() => {
+    console.log('RecordDetail: useEffect triggered with ID:', id);
+    debugStorageIssues();
     fetchRecord();
-  }, [id, actor]);
+  }, [id]);
+
+  // Move actor dependency to a separate useEffect to avoid re-fetching when actor changes
+  useEffect(() => {
+    if (actor && !record) {
+      console.log('RecordDetail: Actor changed and no record found, fetching again');
+      fetchRecord();
+    }
+  }, [actor]);
 
   useEffect(() => {
     // Check if the user profile has a linked ABHA ID
@@ -116,84 +185,334 @@ const RecordDetail: React.FC = () => {
   }, []);
 
   const fetchRecord = async () => {
+    console.log('RecordDetail: fetchRecord called with ID:', id);
     try {
-      if (!actor || !id) {
+      setLoading(true);
+      
+      if (!id) {
+        setError('Record ID is missing');
         setLoading(false);
         return;
       }
-      const result = await actor.get_record(id);
       
-      if (!result || !result[0]) {
-        setError('Record not found');
-        return;
+      // First, check if we have the record in sessionStorage
+      console.log('RecordDetail: Checking sessionStorage for record');
+      const sessionRecord = sessionStorage.getItem('currentRecord');
+      console.log('RecordDetail: Raw record from sessionStorage:', sessionRecord);
+      
+      if (sessionRecord) {
+        try {
+          const parsedRecord = JSON.parse(sessionRecord);
+          console.log('RecordDetail: Parsed record from sessionStorage:', parsedRecord);
+          
+          if (parsedRecord && parsedRecord.id === id) {
+            console.log('RecordDetail: Found matching record in sessionStorage, using it');
+            setRecord(parsedRecord);
+            setEditedRecord({
+              record_type: parsedRecord.record_type || '',
+              description: parsedRecord.description || '',
+              doctor: parsedRecord.doctor || ''
+            });
+            
+            // Load attachments if any
+            loadAttachments(id);
+            setLoading(false);
+            return;
+          } else {
+            console.log('RecordDetail: Session record ID does not match requested ID');
+            if (parsedRecord) {
+              console.log('RecordDetail: Session record ID:', parsedRecord.id, 'Requested ID:', id);
+            }
+          }
+        } catch (e) {
+          console.error('RecordDetail: Error parsing session record:', e);
+        }
+      } else {
+        console.log('RecordDetail: No record found in sessionStorage');
       }
       
-      const recordData = result[0];
-      setRecord(recordData);
-      setEditedRecord({
-        record_type: recordData.record_type,
-        description: recordData.description,
-        doctor: recordData.doctor
-      });
+      // Try to get from local storage if not found in session
+      console.log('RecordDetail: Checking localStorage for record');
+      const localRecords = localStorage.getItem('health_records');
+      console.log('RecordDetail: health_records exists in localStorage:', localRecords ? 'Yes' : 'No');
       
-      // For now, we'll use localStorage to store attachments since we don't have backend support
-      const savedAttachments = localStorage.getItem(`attachments-${id}`);
-      if (savedAttachments) {
-        setAttachments(JSON.parse(savedAttachments));
+      if (localRecords) {
+        try {
+          const parsedRecords = JSON.parse(localRecords);
+          console.log('RecordDetail: Parsed records from localStorage, count:', Array.isArray(parsedRecords) ? parsedRecords.length : 'Not an array');
+          
+          if (!Array.isArray(parsedRecords)) {
+            console.error('RecordDetail: health_records is not an array:', typeof parsedRecords);
+            throw new Error('Invalid format for health_records in localStorage');
+          }
+          
+          // For debugging, show all record IDs
+          if (parsedRecords.length > 0) {
+            console.log('RecordDetail: All record IDs in localStorage:', parsedRecords.map((r: any) => r.id));
+          }
+          
+          const foundRecord = parsedRecords.find((r: any) => r.id === id);
+          console.log('RecordDetail: Found record in localStorage:', foundRecord ? 'Yes' : 'No');
+          
+          if (foundRecord) {
+            console.log('RecordDetail: Using record from localStorage');
+            // Add field validation to ensure we have all required fields
+            if (!foundRecord.id || !foundRecord.record_type || !foundRecord.doctor) {
+              console.error('RecordDetail: Record from localStorage is missing required fields:', foundRecord);
+              setError('The record is missing required fields');
+              setLoading(false);
+              return;
+            }
+            
+            setRecord(foundRecord);
+            setEditedRecord({
+              record_type: foundRecord.record_type,
+              description: foundRecord.description || '',
+              doctor: foundRecord.doctor
+            });
+            
+            // Update sessionStorage with this record for future use
+            sessionStorage.setItem('currentRecord', JSON.stringify(foundRecord));
+            
+            // Load attachments if any
+            loadAttachments(id);
+            setLoading(false);
+            return;
+          } else {
+            console.log('RecordDetail: No matching record found in localStorage with ID:', id);
+          }
+        } catch (e) {
+          console.error('RecordDetail: Error parsing local records:', e);
+        }
+      } else {
+        console.log('RecordDetail: No records found in localStorage');
+      }
+      
+      // If not found locally, try to fetch from backend
+      if (actor) {
+        console.log('RecordDetail: Attempting to fetch from backend');
+        let retryCount = 0;
+        const maxRetries = 2;
+        
+        while (retryCount <= maxRetries) {
+          try {
+            if (retryCount > 0) {
+              console.log(`RecordDetail: Retry attempt ${retryCount} of ${maxRetries}`);
+            }
+            
+            const result = await actor.get_record(id);
+            console.log('RecordDetail: Backend response:', result);
+            
+            if (!result || !Array.isArray(result) || result.length === 0) {
+              console.log('RecordDetail: Backend returned empty result');
+              if (retryCount < maxRetries) {
+                retryCount++;
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait before retry
+                continue;
+              }
+              setError(`Record with ID ${id} was not found in the backend`);
+              setLoading(false);
+              return;
+            }
+            
+            const recordData = result[0];
+            console.log('RecordDetail: Found record in backend:', recordData);
+            
+            // Validate backend record data
+            if (!recordData.id || !recordData.record_type || !recordData.doctor) {
+              console.error('RecordDetail: Record from backend is missing required fields:', recordData);
+              setError('The record from the backend is missing required fields');
+              setLoading(false);
+              return;
+            }
+            
+            setRecord(recordData);
+            setEditedRecord({
+              record_type: recordData.record_type,
+              description: recordData.description || '',
+              doctor: recordData.doctor
+            });
+            
+            // Update sessionStorage with this record for future use
+            sessionStorage.setItem('currentRecord', JSON.stringify(recordData));
+            
+            // Also update localStorage for offline access
+            try {
+              const localRecords = JSON.parse(localStorage.getItem('health_records') || '[]');
+              if (!localRecords.some((r: any) => r.id === id)) {
+                localRecords.push(recordData);
+                localStorage.setItem('health_records', JSON.stringify(localRecords));
+                console.log('RecordDetail: Added record to localStorage for future offline access');
+              }
+            } catch (storageError) {
+              console.error('RecordDetail: Error updating localStorage:', storageError);
+            }
+            
+            // Load attachments if any
+            loadAttachments(id);
+            setLoading(false);
+            return;
+          } catch (error) {
+            console.error(`RecordDetail: Error fetching from backend (attempt ${retryCount+1}):`, error);
+            // Only increment retry if error is potentially recoverable
+            if (error instanceof Error && 
+               (error.message.includes('network') || 
+                error.message.includes('timeout') || 
+                error.message.includes('connection'))) {
+              retryCount++;
+              if (retryCount <= maxRetries) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                continue;
+              }
+            } else {
+              // Non-recoverable error, break out of retry loop
+              break;
+            }
+          }
+        }
+        
+        // If we got here, all retries failed
+        console.error('RecordDetail: All backend fetch attempts failed');
+        setError('Failed to fetch record from backend. Please check your connection.');
+      } else {
+        console.log('RecordDetail: Backend not available to fetch record');
+        setError(`No active backend connection available. Record with ID ${id} not found locally.`);
       }
     } catch (error) {
-      setError('Failed to load record details');
-      console.error('Error fetching record:', error);
+      setError('Failed to load record. Please try again later.');
+      console.error('RecordDetail: Error in fetchRecord:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  const loadAttachments = (recordId: string) => {
+    try {
+      const storedAttachments = localStorage.getItem(`attachments-${recordId}`);
+      if (storedAttachments) {
+        setAttachments(JSON.parse(storedAttachments));
+      }
+    } catch (error) {
+      console.error('Error loading attachments:', error);
+    }
+  };
+
   const handleDelete = async () => {
     try {
-      if (!actor || !id) return;
-      const result = await actor.delete_record(id);
+      setLoading(true);
       
-      if (result) {
-        // Clear attachments from localStorage
-        localStorage.removeItem(`attachments-${id}`);
-        navigate('/records');
-      } else {
-        setError('Failed to delete record');
+      if (!record || !id) {
+        throw new Error('Record not found');
       }
+      
+      // Try to delete from backend first
+      let deletedFromBackend = false;
+      if (actor) {
+        try {
+          deletedFromBackend = await actor.delete_record(id);
+          console.log('Record deleted from backend:', deletedFromBackend);
+        } catch (error) {
+          console.error('Error deleting from backend:', error);
+        }
+      }
+      
+      // Always try to delete from local storage as well
+      try {
+        // Get existing records
+        const localRecords = JSON.parse(localStorage.getItem('health_records') || '[]');
+        
+        // Remove record with matching ID
+        const updatedRecords = localRecords.filter((r: any) => r.id !== id);
+        
+        // Save updated records
+        localStorage.setItem('health_records', JSON.stringify(updatedRecords));
+        
+        // Remove attachments
+        localStorage.removeItem(`attachments-${id}`);
+        
+        console.log('Record removed from local storage');
+      } catch (error) {
+        console.error('Error removing from local storage:', error);
+      }
+      
+      // Set success message
+      localStorage.setItem('record_deleted_success', 'true');
+      localStorage.setItem('deleted_record_type', record.record_type);
+      
+      navigate('/records');
     } catch (error) {
       setError('Failed to delete record');
       console.error('Error deleting record:', error);
     } finally {
+      setLoading(false);
       setConfirmDelete(false);
     }
   };
 
   const handleUpdate = async () => {
     try {
-      if (!actor || !id) return;
+      setLoading(true);
       
-      if (!editedRecord.record_type || !editedRecord.description || !editedRecord.doctor) {
-        setError('Please fill out all fields');
-        return;
+      if (!record || !id) {
+        throw new Error('Record not found');
       }
       
-      const result = await actor.update_record(
-        id,
-        editedRecord.record_type,
-        editedRecord.description,
-        editedRecord.doctor
-      );
+      // Create updated record object
+      const updatedRecord = {
+        ...record,
+        record_type: editedRecord.record_type,
+        description: editedRecord.description,
+        doctor: editedRecord.doctor
+      };
       
-      if (result) {
-        setIsEditing(false);
-        fetchRecord();
-      } else {
-        setError('Failed to update record');
+      // Try to update in backend first
+      let updatedInBackend = false;
+      if (actor) {
+        try {
+          updatedInBackend = await actor.update_record(
+            id,
+            editedRecord.record_type,
+            editedRecord.description,
+            editedRecord.doctor
+          );
+          console.log('Record updated in backend:', updatedInBackend);
+        } catch (error) {
+          console.error('Error updating in backend:', error);
+        }
       }
+      
+      // Always update in local storage
+      try {
+        // Get existing records
+        const localRecords = JSON.parse(localStorage.getItem('health_records') || '[]');
+        
+        // Replace record with matching ID
+        const updatedRecords = localRecords.map((r: any) => 
+          r.id === id ? updatedRecord : r
+        );
+        
+        // Save updated records
+        localStorage.setItem('health_records', JSON.stringify(updatedRecords));
+        
+        // Update session storage too
+        sessionStorage.setItem('currentRecord', JSON.stringify(updatedRecord));
+        
+        console.log('Record updated in local storage');
+      } catch (error) {
+        console.error('Error updating in local storage:', error);
+      }
+      
+      // Update state
+      setRecord(updatedRecord);
+      setIsEditing(false);
+      
+      // Set success message
+      localStorage.setItem('record_updated_success', 'true');
     } catch (error) {
       setError('Failed to update record');
       console.error('Error updating record:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -471,8 +790,8 @@ const RecordDetail: React.FC = () => {
             <Typography variant="subtitle2" color="text.secondary">
               Date
             </Typography>
-            <Typography variant="body1">
-              {new Date(Number(record.date) / 1000000).toLocaleDateString()}
+            <Typography variant="body1" gutterBottom>
+              <strong>Date:</strong> {formatDate(record.date)}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -605,7 +924,11 @@ const RecordDetail: React.FC = () => {
         )}
 
         {/* Attachments Section */}
-        <Box mt={4} sx={{ backgroundColor: '#f5f5f5', p: 3, borderRadius: 2 }}>
+        <Box mt={4} sx={{ 
+          backgroundColor: darkMode ? '#1e2830' : '#f5f5f5', 
+          p: 3, 
+          borderRadius: 2 
+        }}>
           <Divider sx={{ mb: 2 }} />
           
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -630,11 +953,19 @@ const RecordDetail: React.FC = () => {
           {attachments.length === 0 ? (
             <Box 
               sx={{ 
-                border: '2px dashed #bdbdbd', 
-                borderRadius: 2, 
+                border: '2px dashed',
+                borderColor: darkMode ? '#455a64' : '#e0e0e0',
+                borderRadius: 2,
                 p: 4, 
                 textAlign: 'center',
-                backgroundColor: '#ffffff'
+                cursor: 'pointer',
+                minHeight: '100px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: darkMode ? 'rgba(33, 150, 243, 0.15)' : '#ffffff',
+                transition: 'all 0.3s ease'
               }}
             >
               <AttachFileIcon sx={{ fontSize: 40, color: '#9e9e9e', mb: 1 }} />
@@ -802,19 +1133,22 @@ const RecordDetail: React.FC = () => {
             </Box>
           )}
           <Box 
-            component="label" 
-            sx={{ 
-              border: '2px dashed #bdbdbd', 
-              borderRadius: 2, 
-              p: 4, 
+            sx={{
+              border: '2px dashed',
+              borderColor: selectedFile ? '#2196f3' : darkMode ? '#455a64' : '#e0e0e0',
+              borderRadius: 2,
+              p: 2,
+              textAlign: 'center',
+              cursor: 'pointer',
+              minHeight: '100px',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer',
-              my: 2,
-              backgroundColor: selectedFile ? '#e8f4fd' : '#ffffff',
-              transition: 'all 0.3s'
+              alignItems: 'center',
+              backgroundColor: selectedFile 
+                ? darkMode ? 'rgba(33, 150, 243, 0.15)' : '#e8f4fd' 
+                : darkMode ? '#1e2830' : '#ffffff',
+              transition: 'all 0.3s ease'
             }}
           >
             <input

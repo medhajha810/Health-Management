@@ -17,9 +17,11 @@ import { UserProvider, useUser } from './component/UserContext';
 import { createActor } from '../../declarations/healthchain_backend';
 import Contact from './component/Contact';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import FAQ from './component/FAQ';
+import HelpIcon from '@mui/icons-material/Help';
 
 // Get canister ID from environment variables with a fallback
-const backendCanisterId: string = (process.env.CANISTER_ID_HEALTHCHAIN_BACKEND as string) || 'asrmz-lmaaa-aaaaa-qaaeq-cai';
+const backendCanisterId: string = (process.env.CANISTER_ID_HEALTHCHAIN_BACKEND as string) || 'p5w3h-viaaa-aaaah-arcmq-cai';
 
 interface AppContextType {
   actor: any;
@@ -50,7 +52,9 @@ function AppContent() {
 
   const initBackend = async () => {
     try {
-        const agent = new HttpAgent();
+        const agent = new HttpAgent({
+          host: 'https://ic0.app'
+        });
       
           if (process.env.DFX_NETWORK !== 'ic') {
             agent.fetchRootKey().catch(err => {
@@ -63,6 +67,7 @@ function AppContent() {
           });
       
           setActor(actor);
+          console.log('Actor initialized with canisterId:', backendCanisterId);
     } catch (error) {
       console.error('Failed to initialize backend:', error);
     }
@@ -119,12 +124,27 @@ function AppContent() {
                 </IconButton>
               </Tooltip>
               
+              <Tooltip title="View FAQs">
+                <IconButton 
+                  sx={{ 
+                    ml: 1,
+                    color: 'white',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.2)' }, 
+                    transition: 'all 0.3s' 
+                  }}
+                  onClick={() => navigate('/records/faq')}
+                >
+                  <HelpIcon />
+                </IconButton>
+              </Tooltip>
+              
               <Tooltip title="Contact Support">
                 <IconButton 
                   color="inherit" 
-                  component="a" 
-                  href="/contact"
+                  onClick={() => navigate('/contact')}
                   sx={{ 
+                    ml: 1,
                     color: 'white',
                     transition: 'transform 0.2s',
                     '&:hover': {
@@ -151,12 +171,13 @@ function AppContent() {
                 {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
               </IconButton>
 
-              <Tooltip title="User profile">
+              <Tooltip title="User profile (click for menu, double-click for profile)">
                 <IconButton
                   size="large"
                   aria-controls="menu-appbar"
                   aria-haspopup="true"
                   onClick={handleMenu}
+                  onDoubleClick={() => navigate('/profile')}
                   color="inherit"
                   sx={{ 
                     color: 'white',
@@ -196,7 +217,10 @@ function AppContent() {
                   }
                 }}
               >
-                <MenuItem onClick={() => { handleClose(); window.location.href = '/profile'; }}>
+                <MenuItem onClick={() => { 
+                  handleClose(); 
+                  navigate('/profile');
+                }}>
                   Profile Settings
                 </MenuItem>
                 {profiles.length > 1 && (
@@ -212,10 +236,11 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<UserProfile />} />
             <Route path="/records" element={<RecordList />} />
             <Route path="/records/new" element={<NewRecord />} />
             <Route path="/records/:id" element={<RecordDetail />} />
-            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/records/faq" element={<FAQ />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </Container>
@@ -225,6 +250,17 @@ function AppContent() {
 }
 
 function App() {
+  useEffect(() => {
+    setTimeout(() => {
+      const loader = document.getElementById("loading");
+      if (loader) {
+        loader.style.opacity = "0";
+        setTimeout(() => {
+          loader.style.display = "none";
+        }, 500);
+      }
+    }, 300);
+  }, []);
   return (
     <CustomThemeProvider>
       <UserProvider>

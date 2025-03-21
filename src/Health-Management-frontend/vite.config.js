@@ -68,7 +68,7 @@ export default defineConfig({
     'process.env.CANISTER_ID_HEALTH_MANAGEMENT_FRONTEND': 
       JSON.stringify(process.env.CANISTER_ID_HEALTH_MANAGEMENT_FRONTEND || ''),
     'process.env.CANISTER_ID_HEALTHCHAIN_BACKEND': 
-      JSON.stringify(process.env.CANISTER_ID_HEALTHCHAIN_BACKEND || 'asrmz-lmaaa-aaaaa-qaaeq-cai'),
+      JSON.stringify(process.env.CANISTER_ID_HEALTHCHAIN_BACKEND || 'p5w3h-viaaa-aaaah-arcmq-cai'),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
   },
 });
