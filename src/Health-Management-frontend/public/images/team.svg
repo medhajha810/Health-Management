@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100" width="200" height="100">
+  <!-- Background Circle -->
+  <circle cx="100" cy="50" r="45" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" />
+  
+  <!-- Doctor (left) -->
+  <circle cx="65" cy="40" r="15" fill="#bbdefb" stroke="#2196f3" stroke-width="1" /> <!-- Head -->
+  <rect x="57" y="55" width="16" height="20" fill="#bbdefb" stroke="#2196f3" stroke-width="1" rx="3" /> <!-- Body -->
+  <rect x="60" y="35" width="10" height="2" fill="#1565c0" /> <!-- Glasses -->
+  <circle cx="65" cy="42" r="5" fill="white" stroke="#1565c0" stroke-width="0.5" /> <!-- Stethoscope -->
+  
+  <!-- Nurse (middle) -->
+  <circle cx="100" cy="40" r="15" fill="#f8bbd0" stroke="#e91e63" stroke-width="1" /> <!-- Head -->
+  <rect x="92" y="55" width="16" height="20" fill="#f8bbd0" stroke="#e91e63" stroke-width="1" rx="3" /> <!-- Body -->
+  <path d="M 92 45 Q 100 50 108 45" fill="none" stroke="#e91e63" stroke-width="1" /> <!-- Smile -->
+  
+  <!-- Lab Tech (right) -->
+  <circle cx="135" cy="40" r="15" fill="#fff9c4" stroke="#ffc107" stroke-width="1" /> <!-- Head -->
+  <rect x="127" y="55" width="16" height="20" fill="#fff9c4" stroke="#ffc107" stroke-width="1" rx="3" /> <!-- Body -->
+  <rect x="128" y="60" width="14" height="10" fill="white" stroke="#ffc107" stroke-width="0.5" /> <!-- Lab Coat Pocket -->
+  
+  <!-- Connecting Lines -->
+  <line x1="73" y1="60" x2="92" y2="60" stroke="#4caf50" stroke-width="1" stroke-dasharray="3" />
+  <line x1="108" y1="60" x2="127" y2="60" stroke="#4caf50" stroke-width="1" stroke-dasharray="3" />
+  
+  <!-- Team Text -->
+  <text x="100" y="90" font-family="Arial" font-size="10" text-anchor="middle" fill="#388e3c">HEALTHCARE TEAM</text>
+</svg> 

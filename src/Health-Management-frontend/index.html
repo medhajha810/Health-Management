@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width" />
   <title>Health Management System</title>
   <link rel="icon" href="favicon.ico" />
+  <!-- Preload important assets -->
+  <link rel="preload" href="/images/hello_nurse.svg" as="image" type="image/svg+xml">
+  <link rel="preload" href="/images/healthcare.svg" as="image" type="image/svg+xml">
+  <link rel="preload" href="/images/team.svg" as="image" type="image/svg+xml">
   <style>
     body {
       margin: 0;
@@ -46,16 +50,35 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    .loader-message {
+      position: absolute;
+      bottom: 30%;
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      max-width: 80%;
+      display: none;
+    }
+    .loader-message a {
+      color: #1976d2;
+      text-decoration: underline;
+      cursor: pointer;
+    }
   </style>
 </head>
 
 <body>
   <div id="loading">
     <div class="spinner"></div>
+    <div id="loader-message" class="loader-message">
+      Taking longer than expected? 
+      <br><br>
+      <a onclick="goToDashboard()">Skip to Dashboard</a> or try 
+      <a href="troubleshoot.html">troubleshooting</a>
+    </div>
   </div>
   <div class="browser-warning">
-    ⚠️ If this page appears broken, try reloading. If the problem persists, try switching browsers; Chrome or
-    Firefox are recommended.
+    This application is optimized for desktop browsers. Some features may not work as expected on mobile devices.
   </div>
   <div id="root"></div>
   <script type="module" src="/src/index.tsx"></script>

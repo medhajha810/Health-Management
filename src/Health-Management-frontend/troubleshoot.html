@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Management System - Troubleshoot</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #1976d2;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #1976d2;
+      color: white;
+      padding: 10px 20px;
+      margin: 10px 5px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .button:hover {
+      background-color: #1565c0;
+    }
+    .card {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin: 20px 0;
+    }
+  </style>
+  <script>
+    // Function to bypass loader completely
+    function goToRoute(route) {
+      window.location.href = `index.html?bypass=1#/${route}`;
+    }
+  </script>
+</head>
+<body>
+  <h1>Health Management System - Troubleshooting</h1>
+  
+  <div class="card">
+    <h2>Having trouble loading the application?</h2>
+    <p>Try these direct links to different parts of the application:</p>
+    
+    <div class="button-grid">
+      <a href="javascript:goToRoute('')" class="button">Landing Page</a>
+      <a href="javascript:goToRoute('project-details')" class="button">Project Details</a>
+      <a href="javascript:goToRoute('dashboard')" class="button">Dashboard</a>
+      <a href="javascript:goToRoute('profile')" class="button">User Profile</a>
+      <a href="javascript:goToRoute('records')" class="button">Records</a>
+      <a href="javascript:goToRoute('records/new')" class="button">New Record</a>
+      <a href="javascript:goToRoute('records/faq')" class="button">FAQ</a>
+      <a href="javascript:goToRoute('contact')" class="button">Contact</a>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>Common issues and solutions:</h2>
+    <ul>
+      <li><strong>Infinite loading spinner:</strong> Try the direct links above or clear your browser cache and cookies.</li>
+      <li><strong>Blank page:</strong> Ensure JavaScript is enabled in your browser settings.</li>
+      <li><strong>Missing elements:</strong> Try using a different browser like Chrome or Firefox.</li>
+      <li><strong>Routing issues:</strong> Use the direct links above which bypass the standard navigation.</li>
+    </ul>
+  </div>
+  
+  <div class="card">
+    <h2>Try these steps if you're still experiencing issues:</h2>
+    <ol>
+      <li>Refresh the page (F5 or Ctrl+R)</li>
+      <li>Clear browser cache (Ctrl+Shift+Delete in most browsers)</li>
+      <li>Try opening the app in an incognito/private browsing window</li>
+      <li>Use a different browser</li>
+      <li>Disable browser extensions that might interfere with the application</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Last resort options:</h2>
+    <p>If you still can't access the application, try these options:</p>
+    <ul>
+      <li><a href="index.html?bypass=1" class="button">Skip all animations</a></li>
+      <li><a href="index.html?minimal=1#/dashboard" class="button">Minimal load mode</a></li>
+    </ul>
+  </div>
+</body>
+</html> 

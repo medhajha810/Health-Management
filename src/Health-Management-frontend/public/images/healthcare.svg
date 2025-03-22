@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100" width="200" height="100">
+  <!-- Hospital Building -->
+  <rect x="60" y="30" width="80" height="60" fill="#e3f2fd" stroke="#2196f3" stroke-width="2" />
+  <!-- Hospital Roof -->
+  <polygon points="50,30 100,10 150,30" fill="#bbdefb" stroke="#2196f3" stroke-width="2" />
+  <!-- Hospital Door -->
+  <rect x="90" y="70" width="20" height="20" fill="#ffffff" stroke="#2196f3" stroke-width="1" />
+  <!-- Red Cross Symbol -->
+  <rect x="95" y="40" width="10" height="20" fill="#f44336" />
+  <rect x="90" y="45" width="20" height="10" fill="#f44336" />
+  <!-- Windows -->
+  <rect x="70" y="45" width="10" height="10" fill="#ffffff" stroke="#2196f3" stroke-width="1" />
+  <rect x="120" y="45" width="10" height="10" fill="#ffffff" stroke="#2196f3" stroke-width="1" />
+  <!-- Digital Health Element -->
+  <circle cx="160" cy="70" r="15" fill="#4caf50" stroke="#388e3c" stroke-width="1" />
+  <text x="160" y="74" font-family="Arial" font-size="12" text-anchor="middle" fill="white">EHR</text>
+  <!-- Health Data Flow Line -->
+  <path d="M 130 50 Q 150 30 170 50" fill="none" stroke="#2196f3" stroke-width="2" stroke-dasharray="4" />
+</svg> 
