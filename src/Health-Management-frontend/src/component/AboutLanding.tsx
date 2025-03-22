@@ -44,6 +44,10 @@ const AboutLanding: React.FC = () => {
     const goToProjectDetails = () => {
       navigate('/project-details');
     };
+    
+    const goToOriginalWelcome = () => {
+      navigate('/welcome/details');
+    };
 
     const containerVariants = {
       hidden: { opacity: 0 },
@@ -247,7 +251,7 @@ const AboutLanding: React.FC = () => {
                         variant="contained"
                         size="large"
                         endIcon={<KeyboardArrowRightIcon />}
-                        onClick={goToProjectDetails}
+                        onClick={goToOriginalWelcome}
                         sx={{
                           borderRadius: 8,
                           py: 1.5,
@@ -517,7 +521,7 @@ const AboutLanding: React.FC = () => {
                             variant="contained"
                             size="large"
                             endIcon={<KeyboardArrowRightIcon />}
-                            onClick={goToProjectDetails}
+                            onClick={goToOriginalWelcome}
                             sx={{
                               borderRadius: 8,
                               py: 1.5,

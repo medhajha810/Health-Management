@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Container,
   Grid,
@@ -27,6 +27,11 @@ import PersonIcon from '@mui/icons-material/Person';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import { useUser } from './UserContext';
 import { useTheme } from './ThemeContext';
 import { motion } from 'framer-motion';
@@ -416,6 +421,82 @@ const Dashboard: React.FC = () => {
             </Card>
           </Grid>
         ))}
+
+        <Grid item xs={12} sm={6} md={4}>
+          <motion.div variants={itemVariants}>
+            <Card sx={cardStyle}>
+              <CardContent sx={{ position: 'relative', flexGrow: 1, p: 3 }}>
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%'
+                }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Avatar sx={{ bgcolor: 'info.main', mr: 2 }}>
+                      <NotificationsActiveIcon />
+                    </Avatar>
+                    <Typography variant="h6" component="h2">
+                      Notifications
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Stay updated with your health records, appointments, and important reminders.
+                  </Typography>
+                  <Box sx={{ mt: 'auto' }}>
+                    <Button 
+                      variant="contained" 
+                      color="info"
+                      endIcon={<ArrowForwardIcon />}
+                      sx={buttonStyle}
+                      onClick={() => navigate('/notifications')}
+                      fullWidth
+                    >
+                      View Notifications
+                    </Button>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4}>
+          <motion.div variants={itemVariants}>
+            <Card sx={cardStyle}>
+              <CardContent sx={{ position: 'relative', flexGrow: 1, p: 3 }}>
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%'
+                }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Avatar sx={{ bgcolor: 'success.main', mr: 2 }}>
+                      <VideocamIcon />
+                    </Avatar>
+                    <Typography variant="h6" component="h2">
+                      Telehealth
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Connect with healthcare professionals through secure video consultations.
+                  </Typography>
+                  <Box sx={{ mt: 'auto' }}>
+                    <Button 
+                      variant="contained" 
+                      color="success"
+                      endIcon={<ArrowForwardIcon />}
+                      sx={buttonStyle}
+                      onClick={() => navigate('/telehealth')}
+                      fullWidth
+                    >
+                      Start Consultation
+                    </Button>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </Grid>
       </Grid>
 
       {/* Disease Prediction Assistant Banner */}
@@ -884,6 +965,171 @@ const Dashboard: React.FC = () => {
           </motion.div>
         </Box>
       </Zoom>
+
+      {/* Feature Cards */}
+      <Grid container spacing={4} sx={{ mt: 2 }}>
+        {/* Disease Prediction Card */}
+        <Grid item xs={12} sm={6} md={4}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                bgcolor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'white',
+                borderRadius: 4,
+                boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                <LocalHospitalIcon
+                  sx={{
+                    fontSize: 50,
+                    mb: 2,
+                    color: '#e91e63',
+                  }}
+                />
+                <Typography gutterBottom variant="h5" component="h2">
+                  Disease Prediction
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Use our advanced AI tools to predict potential health risks based on your symptoms and medical history.
+                </Typography>
+              </CardContent>
+              <Box sx={{ p: 2 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={handleDiseasePrediction}
+                  sx={{
+                    py: 1.5,
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    bgcolor: '#e91e63',
+                    '&:hover': { bgcolor: '#c2185b' },
+                  }}
+                >
+                  Start Prediction
+                </Button>
+              </Box>
+            </Card>
+          </motion.div>
+        </Grid>
+
+        {/* Physical Fitness Card */}
+        <Grid item xs={12} sm={6} md={4}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                bgcolor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'white',
+                borderRadius: 4,
+                boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                <FitnessCenterIcon
+                  sx={{
+                    fontSize: 50,
+                    mb: 2,
+                    color: '#4caf50',
+                  }}
+                />
+                <Typography gutterBottom variant="h5" component="h2">
+                  Fitness Tracking
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Track your workouts, set fitness goals, and monitor your progress over time to maintain a healthy lifestyle.
+                </Typography>
+              </CardContent>
+              <Box sx={{ p: 2 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  sx={{
+                    py: 1.5,
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    bgcolor: '#4caf50',
+                    '&:hover': { bgcolor: '#388e3c' },
+                  }}
+                >
+                  View Fitness Data
+                </Button>
+              </Box>
+            </Card>
+          </motion.div>
+        </Grid>
+
+        {/* Analytics Card */}
+        <Grid item xs={12} sm={6} md={4}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                bgcolor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'white',
+                borderRadius: 4,
+                boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                <BarChartIcon
+                  sx={{
+                    fontSize: 50,
+                    mb: 2,
+                    color: '#3f51b5',
+                  }}
+                />
+                <Typography gutterBottom variant="h5" component="h2">
+                  Health Analytics
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Visualize your health data trends and gain insights into your overall wellbeing. Track vital signs, medication adherence, and physical activity.
+                </Typography>
+              </CardContent>
+              <Box sx={{ p: 2 }}>
+                <Link to="/analytics" style={{ textDecoration: 'none' }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    sx={{
+                      py: 1.5,
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      fontWeight: 'bold',
+                      bgcolor: '#3f51b5',
+                      '&:hover': { bgcolor: '#303f9f' },
+                    }}
+                  >
+                    View Analytics
+                  </Button>
+                </Link>
+              </Box>
+            </Card>
+          </motion.div>
+        </Grid>
+      </Grid>
     </Container>
   );
 };
