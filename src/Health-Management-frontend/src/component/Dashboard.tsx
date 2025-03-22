@@ -16,7 +16,15 @@ import {
   Fade,
   Fab,
   Tooltip,
-  Zoom
+  Zoom,
+  Chip,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  LinearProgress
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import { useAuth } from '../App';
@@ -32,9 +40,17 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useUser } from './UserContext';
 import { useTheme } from './ThemeContext';
 import { motion } from 'framer-motion';
+import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import BedtimeIcon from '@mui/icons-material/Bedtime';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -43,6 +59,7 @@ const Dashboard: React.FC = () => {
   const abhaLinked = currentProfile?.abhaId && currentProfile?.abhaCardLinked;
   const { darkMode } = useTheme();
   const [loading, setLoading] = useState(true);
+  const [timeFrame, setTimeFrame] = useState('daily');
 
   useEffect(() => {
     // Simulate loading delay for smoother transitions
@@ -1130,6 +1147,1619 @@ const Dashboard: React.FC = () => {
           </motion.div>
         </Grid>
       </Grid>
+
+      {/* New Health Components Section */}
+      <motion.div variants={itemVariants}>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', mt: 6, mb: 3, color: darkMode ? '#90caf9' : '#1976d2' }}>
+          Health Insights & Tools
+        </Typography>
+      </motion.div>
+
+      <Grid container spacing={3}>
+        {/* Weather Health Suggestions */}
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              height: '100%',
+              borderRadius: 3,
+              boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden'
+            }}
+          >
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#03a9f4', mr: 2 }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.8 1.41 1.41 1.79-1.8zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
+                  </svg>
+                </Avatar>
+                <Typography variant="h6" component="h2">
+                  Weather Health Tips
+                </Typography>
+              </Box>
+              
+              <Box sx={{ mb: 2, p: 2, bgcolor: darkMode ? 'rgba(3, 169, 244, 0.1)' : 'rgba(3, 169, 244, 0.05)', borderRadius: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="body2" sx={{ mb: 1, fontWeight: 'medium' }}>
+                    New Delhi, India
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20" fill={darkMode ? "#fff" : "#03a9f4"}>
+                      <path d="M0 0h24v24H0z" fill="none"/>
+                      <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
+                    </svg>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', ml: 0.5 }}>
+                      32°C
+                    </Typography>
+                  </Box>
+                </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, mt: 1 }}>
+                  High UV index (8/10), hot and sunny with 68% humidity
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#e91e63', fontWeight: 'medium', fontSize: '0.8rem' }}>
+                  Heat advisory in effect today
+                </Typography>
+              </Box>
+              
+              <Typography variant="subtitle2" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
+                Health Recommendations:
+              </Typography>
+              
+              <Box component="ul" sx={{ pl: 2 }}>
+                <Box component="li">
+                  <Typography variant="body2" color="text.secondary">
+                    Drink at least 3-4 liters of water today to avoid dehydration
+                  </Typography>
+                </Box>
+                <Box component="li">
+                  <Typography variant="body2" color="text.secondary">
+                    Apply SPF 50+ sunscreen every 2 hours when outdoors
+                  </Typography>
+                </Box>
+                <Box component="li">
+                  <Typography variant="body2" color="text.secondary">
+                    Avoid strenuous outdoor activities between 11am-3pm
+                  </Typography>
+                </Box>
+                <Box component="li">
+                  <Typography variant="body2" color="text.secondary">
+                    Watch for signs of heat exhaustion (dizziness, excessive sweating)
+                  </Typography>
+                </Box>
+              </Box>
+              
+              {/* Detailed weather guide (initially hidden) */}
+              <Box id="detailed-weather-guide" sx={{ display: 'none', mt: 3, mb: 2 }}>
+                <Divider sx={{ my: 2 }} />
+                
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+                  Detailed Weather Health Guide
+                </Typography>
+                
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="subtitle2" fontWeight="medium" color="primary" gutterBottom>
+                    Heat Wave Safety Precautions
+                  </Typography>
+                  <Box component="ul" sx={{ pl: 2, mt: 1 }}>
+                    <Box component="li">
+                      <Typography variant="body2" color="text.secondary">
+                        Wear lightweight, light-colored, loose-fitting clothing
+                      </Typography>
+                    </Box>
+                    <Box component="li">
+                      <Typography variant="body2" color="text.secondary">
+                        Schedule outdoor activities during cooler morning and evening hours
+                      </Typography>
+                    </Box>
+                    <Box component="li">
+                      <Typography variant="body2" color="text.secondary">
+                        Rest frequently in shaded areas to allow your body to recover
+                      </Typography>
+                    </Box>
+                    <Box component="li">
+                      <Typography variant="body2" color="text.secondary">
+                        Never leave children or pets in a closed vehicle in hot weather
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+                
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="subtitle2" fontWeight="medium" color="primary" gutterBottom>
+                    UV Protection Measures
+                  </Typography>
+                  <Box component="ul" sx={{ pl: 2, mt: 1 }}>
+                    <Box component="li">
+                      <Typography variant="body2" color="text.secondary">
+                        Use a broad-spectrum sunscreen with SPF 50+ and reapply every 2 hours
+                      </Typography>
+                    </Box>
+                    <Box component="li">
+                      <Typography variant="body2" color="text.secondary">
+                        Wear UV-protective sunglasses and a wide-brimmed hat
+                      </Typography>
+                    </Box>
+                    <Box component="li">
+                      <Typography variant="body2" color="text.secondary">
+                        Seek shade during peak sun intensity hours (10am-4pm)
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+                
+                <Box>
+                  <Typography variant="subtitle2" fontWeight="medium" color="primary" gutterBottom>
+                    Heat-Related Illness Warning Signs
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                    <Box sx={{ flex: 1, p: 1.5, bgcolor: 'rgba(255, 152, 0, 0.1)', borderRadius: 2, border: '1px solid rgba(255, 152, 0, 0.2)' }}>
+                      <Typography variant="body2" fontWeight="bold" color="warning.main" gutterBottom>
+                        Heat Exhaustion
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                        Heavy sweating, cool pale skin, fast pulse, nausea, dizziness, headache
+                      </Typography>
+                    </Box>
+                    <Box sx={{ flex: 1, p: 1.5, bgcolor: 'rgba(244, 67, 54, 0.1)', borderRadius: 2, border: '1px solid rgba(244, 67, 54, 0.2)' }}>
+                      <Typography variant="body2" fontWeight="bold" color="error" gutterBottom>
+                        Heat Stroke
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                        High body temp (103°F+), hot/red skin, rapid pulse, confusion, unconsciousness
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </Box>
+              
+              <Button
+                variant="outlined"
+                color="info"
+                fullWidth
+                onClick={() => {
+                  const detailedGuide = document.getElementById('detailed-weather-guide');
+                  const button = document.getElementById('weather-guide-button');
+                  
+                  if (detailedGuide && button) {
+                    const isVisible = detailedGuide.style.display !== 'none';
+                    
+                    if (isVisible) {
+                      detailedGuide.style.display = 'none';
+                      button.textContent = 'View Detailed Weather Health Guide';
+                    } else {
+                      detailedGuide.style.display = 'block';
+                      button.textContent = 'Hide Detailed Guide';
+                    }
+                  }
+                }}
+                id="weather-guide-button"
+                sx={{ 
+                  mt: 2,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 'bold'
+                }}
+              >
+                View Detailed Weather Health Guide
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Symptom Analyzer */}
+        <Grid item xs={12} md={8}>
+          <Card
+            sx={{
+              height: '100%',
+              borderRadius: 3,
+              boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden'
+            }}
+          >
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Avatar sx={{ bgcolor: '#f44336', mr: 2 }}>
+                  <LocalHospitalIcon />
+                </Avatar>
+                <Typography variant="h6" component="h2">
+                  Symptom Analyzer
+                </Typography>
+              </Box>
+              
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Select your symptoms below to get an instant analysis of potential health conditions. This tool helps identify possible health issues but doesn't replace professional medical advice.
+              </Typography>
+              
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Select your symptoms:
+                </Typography>
+                <Box 
+                  sx={{ 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    gap: 1, 
+                    mb: 2 
+                  }}
+                >
+                  {[
+                    { name: 'Headache', id: 1 },
+                    { name: 'Fever', id: 2 },
+                    { name: 'Cough', id: 3 },
+                    { name: 'Fatigue', id: 4 },
+                    { name: 'Nausea', id: 5 },
+                    { name: 'Sore Throat', id: 6 },
+                    { name: 'Muscle Pain', id: 7 },
+                    { name: 'Dizziness', id: 8 },
+                    { name: 'Shortness of Breath', id: 9 },
+                    { name: 'Loss of Appetite', id: 10 }
+                  ].map((symptom) => (
+                    <Chip
+                      key={symptom.id}
+                      label={symptom.name}
+                      onClick={() => {
+                        // In a real implementation, this would toggle the symptom selection
+                        const element = document.getElementById(`symptom-${symptom.id}`);
+                        if (element) {
+                          const isSelected = element.getAttribute('data-selected') === 'true';
+                          element.setAttribute('data-selected', isSelected ? 'false' : 'true');
+                          element.style.backgroundColor = isSelected ? 'transparent' : (darkMode ? '#1976d2' : '#2196f3');
+                          element.style.color = isSelected ? 'inherit' : '#fff';
+                        }
+                      }}
+                      id={`symptom-${symptom.id}`}
+                      data-selected="false"
+                      variant="outlined"
+                      sx={{ 
+                        borderRadius: 1,
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          backgroundColor: darkMode ? 'rgba(244, 67, 54, 0.1)' : 'rgba(244, 67, 54, 0.05)',
+                          cursor: 'pointer'
+                        }
+                      }}
+                    />
+                  ))}
+                </Box>
+                
+                <Box id="analysis-results-container" sx={{ display: 'none' }}>
+                  <Box sx={{ 
+                    mt: 3, 
+                    p: 2, 
+                    bgcolor: darkMode ? 'rgba(3, 169, 244, 0.1)' : 'rgba(3, 169, 244, 0.05)', 
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: darkMode ? 'rgba(3, 169, 244, 0.3)' : 'rgba(3, 169, 244, 0.2)'
+                  }}>
+                    <Typography variant="subtitle2" fontWeight="bold" gutterBottom color="primary">
+                      Symptom Analysis Results:
+                    </Typography>
+                    
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="body2" gutterBottom>
+                        <b>Potential conditions based on your selected symptoms:</b>
+                      </Typography>
+                      <Box component="ul" sx={{ pl: 2, mt: 1 }} id="conditions-list">
+                        {/* Analysis results will be displayed here */}
+                      </Box>
+                    </Box>
+                    
+                    <Typography variant="body2" color="error" sx={{ fontWeight: 'medium', mt: 2 }}>
+                      Note: This is not a medical diagnosis. Please consult with a healthcare professional for proper evaluation.
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+              
+              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between' }}>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => {
+                    // In a real implementation, this would analyze the selected symptoms
+                    // For demo purposes, we're showing mock analysis results
+                    const analysisContainer = document.getElementById('analysis-results-container');
+                    const conditionsList = document.getElementById('conditions-list');
+                    
+                    if (analysisContainer && conditionsList) {
+                      // Count selected symptoms
+                      const selectedSymptoms = [];
+                      for (let i = 1; i <= 10; i++) {
+                        const symptomElement = document.getElementById(`symptom-${i}`);
+                        if (symptomElement && symptomElement.getAttribute('data-selected') === 'true') {
+                          selectedSymptoms.push(symptomElement.textContent);
+                        }
+                      }
+                      
+                      // Generate analysis based on selections
+                      conditionsList.innerHTML = '';
+                      
+                      if (selectedSymptoms.length === 0) {
+                        // No symptoms selected case
+                        const noSymptomsItem = document.createElement('div');
+                        noSymptomsItem.innerHTML = '<p>Please select at least one symptom for analysis.</p>';
+                        conditionsList.appendChild(noSymptomsItem);
+                      } else {
+                        // Generate mock conditions based on selected symptoms
+                        const conditions = [
+                          { name: 'Common Cold', match: '85%', description: 'Upper respiratory infection with symptoms like cough, sore throat, and congestion' },
+                          { name: 'Seasonal Allergies', match: '72%', description: 'Allergic reaction to environmental factors causing respiratory symptoms' },
+                          { name: 'Migraine', match: '65%', description: 'Neurological condition causing severe headaches and sometimes nausea' },
+                          { name: 'Influenza', match: '58%', description: 'Viral infection with fever, body aches, and respiratory symptoms' },
+                          { name: 'Stress', match: '45%', description: 'Physical and emotional tension manifesting as various physical symptoms' }
+                        ];
+                        
+                        // Display a subset based on symptom count
+                        const displayCount = Math.min(selectedSymptoms.length + 1, conditions.length);
+                        
+                        for (let i = 0; i < displayCount; i++) {
+                          const condition = conditions[i];
+                          const listItem = document.createElement('li');
+                          listItem.innerHTML = `<div style="margin-bottom: 8px;">
+                            <p style="margin: 0; font-weight: bold;">${condition.name} (${condition.match} match)</p>
+                            <p style="margin: 0; font-size: 0.875rem; color: ${darkMode ? '#aaa' : '#666'};">
+                              ${condition.description}
+                            </p>
+                          </div>`;
+                          conditionsList.appendChild(listItem);
+                        }
+                      }
+                      
+                      analysisContainer.style.display = 'block';
+                    }
+                  }}
+                  sx={{ 
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    flex: 1
+                  }}
+                >
+                  Analyze Symptoms
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    // Reset all symptoms to unselected
+                    for (let i = 1; i <= 10; i++) {
+                      const symptomElement = document.getElementById(`symptom-${i}`);
+                      if (symptomElement) {
+                        symptomElement.setAttribute('data-selected', 'false');
+                        symptomElement.style.backgroundColor = 'transparent';
+                        symptomElement.style.color = 'inherit';
+                      }
+                    }
+                    
+                    // Hide analysis results
+                    const analysisContainer = document.getElementById('analysis-results-container');
+                    if (analysisContainer) {
+                      analysisContainer.style.display = 'none';
+                    }
+                  }}
+                  sx={{ 
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Reset
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        {/* Health Data Visualization */}
+        <Grid item xs={12}>
+          <Card
+            sx={{
+              borderRadius: 3,
+              boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden'
+            }}
+          >
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Avatar sx={{ bgcolor: '#4caf50', mr: 2 }}>
+                  <BarChartIcon />
+                </Avatar>
+                <Typography variant="h6" component="h2">
+                  Health Data Visualization
+                </Typography>
+              </Box>
+              
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="subtitle2" fontWeight="bold">
+                    Your Health Metrics Overview
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color="primary"
+                      sx={{ 
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 'medium'
+                      }}
+                    >
+                      Daily
+                    </Button>
+                    <Button
+                      component={Link}
+                      to="/health-metrics/weekly"
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 'medium'
+                      }}
+                    >
+                      Weekly
+                    </Button>
+                    <Button
+                      component={Link}
+                      to="/health-metrics/monthly"
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 'medium'
+                      }}
+                    >
+                      Monthly
+                    </Button>
+                  </Box>
+                </Box>
+                
+                <Box sx={{ height: 200, width: '100%', position: 'relative' }}>
+                  <Box sx={{ 
+                    position: 'absolute', 
+                    top: 0, 
+                    left: 0, 
+                    right: 0, 
+                    bottom: 0, 
+                    display: 'flex', 
+                    alignItems: 'flex-end'
+                  }}>
+                    {/* Real Data Chart */}
+                    {[
+                      { day: 'Mon', value: 60, label: '8,532 steps' },
+                      { day: 'Tue', value: 75, label: '10,287 steps' },
+                      { day: 'Wed', value: 45, label: '6,845 steps' },
+                      { day: 'Thu', value: 80, label: '11,322 steps' },
+                      { day: 'Fri', value: 65, label: '9,112 steps' },
+                      { day: 'Sat', value: 90, label: '12,573 steps' },
+                      { day: 'Sun', value: 70, label: '9,845 steps' }
+                    ].map((data, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          height: `${data.value}%`,
+                          width: '10%',
+                          backgroundColor: index === 3 ? '#4caf50' : darkMode ? 'rgba(33, 150, 243, 0.7)' : 'rgba(33, 150, 243, 0.5)',
+                          mx: '1.5%',
+                          borderRadius: '4px 4px 0 0',
+                          transition: 'height 0.3s ease',
+                          position: 'relative',
+                          '&:hover': {
+                            backgroundColor: index === 3 ? '#66bb6a' : 'rgba(33, 150, 243, 0.8)',
+                            cursor: 'pointer'
+                          }
+                        }}
+                      >
+                        <Tooltip title={`${data.day}: ${data.label}`} placement="top">
+                          <Box sx={{ width: '100%', height: '100%' }} />
+                        </Tooltip>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+                
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                    <Typography key={day} variant="caption" color="text.secondary">
+                      {day}
+                    </Typography>
+                  ))}
+                </Box>
+              </Box>
+              
+              <Box>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Paper 
+                      elevation={0} 
+                      sx={{ 
+                        p: 2, 
+                        bgcolor: darkMode ? 'rgba(33, 150, 243, 0.1)' : 'rgba(33, 150, 243, 0.05)',
+                        borderRadius: 2
+                      }}
+                    >
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Steps
+                      </Typography>
+                      <Typography variant="h5" sx={{ fontWeight: 'medium', my: 1 }}>
+                        11,322
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <ArrowForwardIcon sx={{ fontSize: 16, color: '#4caf50', mr: 0.5, transform: 'rotate(45deg)' }} />
+                        <Typography variant="body2" color="success.main">
+                          +24% from yesterday
+                        </Typography>
+                      </Box>
+                    </Paper>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Paper 
+                      elevation={0} 
+                      sx={{ 
+                        p: 2, 
+                        bgcolor: darkMode ? 'rgba(233, 30, 99, 0.1)' : 'rgba(233, 30, 99, 0.05)',
+                        borderRadius: 2
+                      }}
+                    >
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Heart Rate
+                      </Typography>
+                      <Typography variant="h5" sx={{ fontWeight: 'medium', my: 1 }}>
+                        68 bpm
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <ArrowForwardIcon sx={{ fontSize: 16, color: '#4caf50', mr: 0.5, transform: 'rotate(-45deg)' }} />
+                        <Typography variant="body2" color="success.main">
+                          Resting, optimal
+                        </Typography>
+                      </Box>
+                    </Paper>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Paper 
+                      elevation={0} 
+                      sx={{ 
+                        p: 2, 
+                        bgcolor: darkMode ? 'rgba(156, 39, 176, 0.1)' : 'rgba(156, 39, 176, 0.05)',
+                        borderRadius: 2
+                      }}
+                    >
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Sleep
+                      </Typography>
+                      <Typography variant="h5" sx={{ fontWeight: 'medium', my: 1 }}>
+                        7h 35m
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <ArrowForwardIcon sx={{ fontSize: 16, color: '#4caf50', mr: 0.5, transform: 'rotate(45deg)' }} />
+                        <Typography variant="body2" color="success.main">
+                          +45m from average
+                        </Typography>
+                      </Box>
+                    </Paper>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Paper 
+                      elevation={0} 
+                      sx={{ 
+                        p: 2, 
+                        bgcolor: darkMode ? 'rgba(76, 175, 80, 0.1)' : 'rgba(76, 175, 80, 0.05)',
+                        borderRadius: 2
+                      }}
+                    >
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Active Minutes
+                      </Typography>
+                      <Typography variant="h5" sx={{ fontWeight: 'medium', my: 1 }}>
+                        53 min
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <ArrowForwardIcon sx={{ fontSize: 16, color: '#4caf50', mr: 0.5, transform: 'rotate(45deg)' }} />
+                        <Typography variant="body2" color="success.main">
+                          +8% above goal
+                        </Typography>
+                      </Box>
+                    </Paper>
+                  </Grid>
+                </Grid>
+              </Box>
+              
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  // Toggle the display of expanded health dashboard
+                  const expandedDashboard = document.getElementById('expanded-health-dashboard');
+                  const button = document.getElementById('full-dashboard-button');
+                  
+                  if (expandedDashboard && button) {
+                    const isVisible = expandedDashboard.style.display !== 'none';
+                    
+                    if (isVisible) {
+                      expandedDashboard.style.display = 'none';
+                      button.textContent = 'View Full Health Dashboard';
+                    } else {
+                      expandedDashboard.style.display = 'block';
+                      button.textContent = 'Hide Full Dashboard';
+                    }
+                  }
+                }}
+                id="full-dashboard-button"
+                sx={{ 
+                  mt: 3,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 'bold'
+                }}
+              >
+                View Full Health Dashboard
+              </Button>
+              
+              {/* Expanded Health Dashboard (initially hidden) */}
+              <Box id="expanded-health-dashboard" sx={{ display: 'none', mt: 4 }}>
+                <Divider sx={{ my: 2 }} />
+                
+                <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                  Complete Health Metrics Dashboard
+                </Typography>
+                
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                    Weekly Trends
+                  </Typography>
+                  
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <Box sx={{ p: 2, bgcolor: darkMode ? 'rgba(33, 150, 243, 0.1)' : 'rgba(33, 150, 243, 0.05)', borderRadius: 2, height: '100%' }}>
+                        <Typography variant="subtitle2" color="primary" gutterBottom>
+                          Physical Activity
+                        </Typography>
+                        <Box sx={{ height: 120, display: 'flex', alignItems: 'flex-end', mt: 2, mb: 1 }}>
+                          {[
+                            { value: 75, label: '10,287' },
+                            { value: 90, label: '12,573' },
+                            { value: 60, label: '8,532' },
+                            { value: 85, label: '11,322' },
+                          ].map((item, index) => (
+                            <Box 
+                              key={index}
+                              sx={{ 
+                                height: `${item.value}%`, 
+                                width: '22%', 
+                                mx: '1.5%',
+                                bgcolor: 'primary.main',
+                                borderRadius: '4px 4px 0 0',
+                                position: 'relative'
+                              }}
+                            >
+                              <Typography 
+                                variant="caption" 
+                                sx={{ 
+                                  position: 'absolute', 
+                                  bottom: -20, 
+                                  left: 0, 
+                                  width: '100%', 
+                                  textAlign: 'center',
+                                  fontSize: '0.65rem'
+                                }}
+                              >
+                                {item.label}
+                              </Typography>
+                            </Box>
+                          ))}
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Average: 10,678 steps
+                          </Typography>
+                          <Typography variant="caption" color="success.main">
+                            +18% vs last week
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                    
+                    <Grid item xs={12} md={6}>
+                      <Box sx={{ p: 2, bgcolor: darkMode ? 'rgba(233, 30, 99, 0.1)' : 'rgba(233, 30, 99, 0.05)', borderRadius: 2, height: '100%' }}>
+                        <Typography variant="subtitle2" color="error" gutterBottom>
+                          Heart Rate
+                        </Typography>
+                        <Box sx={{ height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1 }}>
+                          <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+                            <Box 
+                              component="svg" 
+                              sx={{ width: '100%', height: '100%' }}
+                              viewBox="0 0 100 50"
+                              preserveAspectRatio="none"
+                            >
+                              <path
+                                d="M0,25 Q10,10 20,25 T40,25 T60,15 T80,35 T100,25"
+                                fill="none"
+                                stroke={darkMode ? "#f48fb1" : "#e91e63"}
+                                strokeWidth="2"
+                              />
+                              <circle cx="20" cy="25" r="2" fill="#e91e63" />
+                              <circle cx="40" cy="25" r="2" fill="#e91e63" />
+                              <circle cx="60" cy="15" r="2" fill="#e91e63" />
+                              <circle cx="80" cy="35" r="2" fill="#e91e63" />
+                            </Box>
+                            <Box sx={{ 
+                              position: 'absolute', 
+                              top: '50%', 
+                              left: '50%', 
+                              transform: 'translate(-50%, -50%)',
+                              textAlign: 'center'
+                            }}>
+                              <Typography variant="h5" color="error.main" sx={{ fontWeight: 'bold' }}>
+                                68
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                BPM
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Resting range: 60-72
+                          </Typography>
+                          <Typography variant="caption" color="success.main">
+                            Optimal zone
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Box>
+                
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                    Detailed Health Metrics
+                  </Typography>
+                  
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Box sx={{ p: 2, bgcolor: darkMode ? 'rgba(156, 39, 176, 0.1)' : 'rgba(156, 39, 176, 0.05)', borderRadius: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          Sleep Quality
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                              7h 35m
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              Avg. duration
+                            </Typography>
+                          </Box>
+                          <Box sx={{ 
+                            width: 40, 
+                            height: 40, 
+                            borderRadius: '50%', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            bgcolor: '#9c27b0',
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            87%
+                          </Box>
+                        </Box>
+                        <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid', borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+                          <Typography variant="caption" display="block" color="text.secondary">
+                            Deep: 2h 12m • Light: 4h 03m • REM: 1h 20m
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                    
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Box sx={{ p: 2, bgcolor: darkMode ? 'rgba(76, 175, 80, 0.1)' : 'rgba(76, 175, 80, 0.05)', borderRadius: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          Nutrition
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                              1,840
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              Cal. consumed
+                            </Typography>
+                          </Box>
+                          <Box sx={{ 
+                            width: 40, 
+                            height: 40, 
+                            borderRadius: '50%', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            bgcolor: '#4caf50',
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            92%
+                          </Box>
+                        </Box>
+                        <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid', borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+                          <Typography variant="caption" display="block" color="text.secondary">
+                            Carbs: 45% • Protein: 30% • Fat: 25%
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                    
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Box sx={{ p: 2, bgcolor: darkMode ? 'rgba(255, 152, 0, 0.1)' : 'rgba(255, 152, 0, 0.05)', borderRadius: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          Hydration
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                              2.1L
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              Water intake
+                            </Typography>
+                          </Box>
+                          <Box sx={{ 
+                            width: 40, 
+                            height: 40, 
+                            borderRadius: '50%', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            bgcolor: '#ff9800',
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            70%
+                          </Box>
+                        </Box>
+                        <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid', borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+                          <Typography variant="caption" display="block" color="text.secondary">
+                            Target: 3.0L • Last intake: 45 min ago
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                    
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Box sx={{ p: 2, bgcolor: darkMode ? 'rgba(0, 150, 136, 0.1)' : 'rgba(0, 150, 136, 0.05)', borderRadius: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          Weight
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                              68.5kg
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              Current
+                            </Typography>
+                          </Box>
+                          <Box sx={{ 
+                            width: 40, 
+                            height: 40, 
+                            borderRadius: '50%', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            bgcolor: '#009688',
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            -0.5
+                          </Box>
+                        </Box>
+                        <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid', borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+                          <Typography variant="caption" display="block" color="text.secondary">
+                            BMI: 22.4 • Body fat: 18% • Target: 67kg
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Box>
+                
+                <Box>
+                  <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                    Health Insights
+                  </Typography>
+                  
+                  <Paper elevation={0} sx={{ p: 2, bgcolor: darkMode ? 'rgba(3, 169, 244, 0.05)' : 'rgba(3, 169, 244, 0.03)', borderRadius: 2 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'medium', color: 'primary.main' }}>
+                      Your health statistics summary:
+                    </Typography>
+                    <Box component="ul" sx={{ pl: 2, mt: 1 }}>
+                      <Box component="li">
+                        <Typography variant="body2" color="text.secondary">
+                          You've been <b>consistently active</b> over the past week, exceeding your daily step goal by 24%
+                        </Typography>
+                      </Box>
+                      <Box component="li">
+                        <Typography variant="body2" color="text.secondary">
+                          Your sleep patterns have improved by <b>45 minutes</b> compared to your monthly average
+                        </Typography>
+                      </Box>
+                      <Box component="li">
+                        <Typography variant="body2" color="text.secondary">
+                          Your resting heart rate of <b>68 BPM</b> indicates good cardiovascular health
+                        </Typography>
+                      </Box>
+                      <Box component="li">
+                        <Typography variant="body2" color="text.secondary">
+                          Water intake is <b>below target</b> - try increasing consumption by 0.9L to reach your daily goal
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Paper>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        {/* Medical Recommendations */}
+        <Grid item xs={12} md={6}>
+          <Card
+            sx={{
+              height: '100%',
+              borderRadius: 3,
+              boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden'
+            }}
+          >
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Avatar sx={{ bgcolor: '#673ab7', mr: 2 }}>
+                  <LocalHospitalIcon />
+                </Avatar>
+                <Typography variant="h6" component="h2">
+                  Medical Recommendations
+                </Typography>
+              </Box>
+              
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Based on your health profile and recent activities, here are some personalized medical recommendations:
+              </Typography>
+              
+              <Box sx={{ mb: 3 }}>
+                <Box
+                  sx={{
+                    p: 2,
+                    mb: 2,
+                    bgcolor: darkMode ? 'rgba(103, 58, 183, 0.1)' : 'rgba(103, 58, 183, 0.05)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: darkMode ? 'rgba(103, 58, 183, 0.2)' : 'rgba(103, 58, 183, 0.1)'
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#673ab7' }}>
+                        Annual Health Check-up Due
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        Your last comprehensive check-up was 11 months ago
+                      </Typography>
+                    </Box>
+                    <Chip 
+                      label="High Priority" 
+                      size="small" 
+                      sx={{ 
+                        bgcolor: darkMode ? 'rgba(233, 30, 99, 0.2)' : 'rgba(233, 30, 99, 0.1)',
+                        color: '#e91e63',
+                        fontWeight: 'medium',
+                        fontSize: '0.7rem'
+                      }} 
+                    />
+                  </Box>
+                  <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2, 
+                        fontSize: '0.7rem', 
+                        textTransform: 'none',
+                        borderColor: '#673ab7',
+                        color: '#673ab7',
+                        '&:hover': {
+                          borderColor: '#673ab7',
+                          bgcolor: 'rgba(103, 58, 183, 0.05)'
+                        }
+                      }}
+                    >
+                      Schedule Now
+                    </Button>
+                    <Button
+                      variant="text"
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2, 
+                        fontSize: '0.7rem', 
+                        textTransform: 'none',
+                        color: 'text.secondary'
+                      }}
+                    >
+                      Remind Later
+                    </Button>
+                  </Box>
+                </Box>
+                
+                <Box
+                  sx={{
+                    p: 2,
+                    bgcolor: darkMode ? 'rgba(103, 58, 183, 0.1)' : 'rgba(103, 58, 183, 0.05)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: darkMode ? 'rgba(103, 58, 183, 0.2)' : 'rgba(103, 58, 183, 0.1)'
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#673ab7' }}>
+                        Covid Vaccination Booster
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        You may be eligible for the latest Covid-19 booster
+                      </Typography>
+                    </Box>
+                    <Chip 
+                      label="Recommended" 
+                      size="small" 
+                      sx={{ 
+                        bgcolor: darkMode ? 'rgba(0, 150, 136, 0.2)' : 'rgba(0, 150, 136, 0.1)',
+                        color: '#00897b',
+                        fontWeight: 'medium',
+                        fontSize: '0.7rem'
+                      }} 
+                    />
+                  </Box>
+                  <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2, 
+                        fontSize: '0.7rem', 
+                        textTransform: 'none',
+                        borderColor: '#673ab7',
+                        color: '#673ab7',
+                        '&:hover': {
+                          borderColor: '#673ab7',
+                          bgcolor: 'rgba(103, 58, 183, 0.05)'
+                        }
+                      }}
+                    >
+                      Check Eligibility
+                    </Button>
+                    <Button
+                      variant="text"
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2, 
+                        fontSize: '0.7rem', 
+                        textTransform: 'none',
+                        color: 'text.secondary'
+                      }}
+                    >
+                      More Info
+                    </Button>
+                  </Box>
+                </Box>
+              </Box>
+              
+              {/* Additional recommendations (initially hidden) */}
+              <Box id="additional-recommendations" sx={{ display: 'none' }}>
+                <Divider sx={{ my: 3 }} />
+                
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                  All Medical Recommendations
+                </Typography>
+                
+                <Box
+                  sx={{
+                    p: 2,
+                    mb: 2,
+                    bgcolor: darkMode ? 'rgba(103, 58, 183, 0.1)' : 'rgba(103, 58, 183, 0.05)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: darkMode ? 'rgba(103, 58, 183, 0.2)' : 'rgba(103, 58, 183, 0.1)'
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#673ab7' }}>
+                        Dental Check-up Reminder
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        It's been 8 months since your last dental visit
+                      </Typography>
+                    </Box>
+                    <Chip 
+                      label="Regular" 
+                      size="small" 
+                      sx={{ 
+                        bgcolor: darkMode ? 'rgba(33, 150, 243, 0.2)' : 'rgba(33, 150, 243, 0.1)',
+                        color: '#2196f3',
+                        fontWeight: 'medium',
+                        fontSize: '0.7rem'
+                      }} 
+                    />
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    Regular dental check-ups are recommended every 6 months to maintain oral health and prevent complications.
+                  </Typography>
+                  <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2, 
+                        fontSize: '0.7rem', 
+                        textTransform: 'none',
+                        borderColor: '#673ab7',
+                        color: '#673ab7',
+                        '&:hover': {
+                          borderColor: '#673ab7',
+                          bgcolor: 'rgba(103, 58, 183, 0.05)'
+                        }
+                      }}
+                    >
+                      Schedule Appointment
+                    </Button>
+                  </Box>
+                </Box>
+                
+                <Box
+                  sx={{
+                    p: 2,
+                    mb: 2,
+                    bgcolor: darkMode ? 'rgba(103, 58, 183, 0.1)' : 'rgba(103, 58, 183, 0.05)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: darkMode ? 'rgba(103, 58, 183, 0.2)' : 'rgba(103, 58, 183, 0.1)'
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#673ab7' }}>
+                        Vitamin D Test Recommended
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        Based on your lifestyle and location
+                      </Typography>
+                    </Box>
+                    <Chip 
+                      label="Suggested" 
+                      size="small" 
+                      sx={{ 
+                        bgcolor: darkMode ? 'rgba(255, 152, 0, 0.2)' : 'rgba(255, 152, 0, 0.1)',
+                        color: '#ff9800',
+                        fontWeight: 'medium',
+                        fontSize: '0.7rem'
+                      }} 
+                    />
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    Indoor lifestyle and limited sun exposure may contribute to vitamin D deficiency, which affects bone health and immunity.
+                  </Typography>
+                  <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2, 
+                        fontSize: '0.7rem', 
+                        textTransform: 'none',
+                        borderColor: '#673ab7',
+                        color: '#673ab7',
+                        '&:hover': {
+                          borderColor: '#673ab7',
+                          bgcolor: 'rgba(103, 58, 183, 0.05)'
+                        }
+                      }}
+                    >
+                      Book Test
+                    </Button>
+                    <Button
+                      variant="text"
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2, 
+                        fontSize: '0.7rem', 
+                        textTransform: 'none',
+                        color: 'text.secondary'
+                      }}
+                    >
+                      Learn More
+                    </Button>
+                  </Box>
+                </Box>
+                
+                <Box
+                  sx={{
+                    p: 2,
+                    bgcolor: darkMode ? 'rgba(103, 58, 183, 0.1)' : 'rgba(103, 58, 183, 0.05)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: darkMode ? 'rgba(103, 58, 183, 0.2)' : 'rgba(103, 58, 183, 0.1)'
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#673ab7' }}>
+                        Eye Examination Due
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        Last check-up: 22 months ago
+                      </Typography>
+                    </Box>
+                    <Chip 
+                      label="Overdue" 
+                      size="small" 
+                      sx={{ 
+                        bgcolor: darkMode ? 'rgba(244, 67, 54, 0.2)' : 'rgba(244, 67, 54, 0.1)',
+                        color: '#f44336',
+                        fontWeight: 'medium',
+                        fontSize: '0.7rem'
+                      }} 
+                    />
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    Regular eye examinations are important for early detection of vision problems and eye diseases, especially with your daily screen time.
+                  </Typography>
+                  <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2, 
+                        fontSize: '0.7rem', 
+                        textTransform: 'none',
+                        borderColor: '#673ab7',
+                        color: '#673ab7',
+                        '&:hover': {
+                          borderColor: '#673ab7',
+                          bgcolor: 'rgba(103, 58, 183, 0.05)'
+                        }
+                      }}
+                    >
+                      Find Eye Specialists
+                    </Button>
+                  </Box>
+                </Box>
+              </Box>
+              
+              <Button
+                variant="outlined"
+                color="secondary"
+                fullWidth
+                onClick={() => {
+                  const additionalRecommendations = document.getElementById('additional-recommendations');
+                  const button = document.getElementById('recommendations-button');
+                  
+                  if (additionalRecommendations && button) {
+                    const isVisible = additionalRecommendations.style.display !== 'none';
+                    
+                    if (isVisible) {
+                      additionalRecommendations.style.display = 'none';
+                      button.textContent = 'View All Recommendations';
+                    } else {
+                      additionalRecommendations.style.display = 'block';
+                      button.textContent = 'Show Less';
+                    }
+                  }
+                }}
+                id="recommendations-button"
+                sx={{ 
+                  mt: 2,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 'bold',
+                  color: '#673ab7',
+                  borderColor: '#673ab7',
+                  '&:hover': {
+                    borderColor: '#673ab7',
+                    bgcolor: 'rgba(103, 58, 183, 0.05)'
+                  }
+                }}
+              >
+                View All Recommendations
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        {/* Health Tips */}
+        <Grid item xs={12} md={6}>
+          <Card
+            sx={{
+              height: '100%',
+              borderRadius: 3,
+              boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden'
+            }}
+          >
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Avatar sx={{ bgcolor: '#00bcd4', mr: 2 }}>
+                  <TipsAndUpdatesIcon />
+                </Avatar>
+                <Typography variant="h6" component="h2">
+                  Daily Health Tips
+                </Typography>
+                <Chip 
+                  label="New" 
+                  size="small" 
+                  sx={{ 
+                    ml: 1,
+                    bgcolor: darkMode ? 'rgba(76, 175, 80, 0.2)' : 'rgba(76, 175, 80, 0.1)',
+                    color: '#4caf50',
+                    fontWeight: 'medium',
+                    fontSize: '0.7rem'
+                  }} 
+                />
+              </Box>
+              
+              <Box id="current-tip">
+                <Typography
+                  variant="body1"
+                  color="text.primary"
+                  gutterBottom
+                  sx={{ fontWeight: 'medium', mb: 1 }}
+                >
+                  Sleep and Immune Function
+                </Typography>
+                
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Adults who sleep less than 7 hours a night are 3 times more likely to develop respiratory infections. 
+                  Aim for 7-9 hours of quality sleep to support your immune system's ability to fight off infections
+                  and maintain overall health.
+                </Typography>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <Chip
+                    label="Sleep"
+                    size="small"
+                    sx={{
+                      mr: 1,
+                      bgcolor: darkMode ? 'rgba(0, 188, 212, 0.2)' : 'rgba(0, 188, 212, 0.1)',
+                      color: '#00bcd4',
+                    }}
+                  />
+                  <Chip
+                    label="Immunity"
+                    size="small"
+                    sx={{
+                      mr: 1,
+                      bgcolor: darkMode ? 'rgba(0, 188, 212, 0.2)' : 'rgba(0, 188, 212, 0.1)',
+                      color: '#00bcd4',
+                    }}
+                  />
+                </Box>
+              </Box>
+              
+              {/* Additional tips (initially hidden) */}
+              <Box id="additional-tips" sx={{ display: 'none' }}>
+                <Divider sx={{ my: 3 }} />
+                
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                  More Health Tips
+                </Typography>
+                
+                <Box sx={{ mb: 3 }}>
+                  <Typography
+                    variant="body1"
+                    color="text.primary"
+                    gutterBottom
+                    sx={{ fontWeight: 'medium', mb: 1 }}
+                  >
+                    Hydration and Cognitive Function
+                  </Typography>
+                  
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Even mild dehydration (1-2% of body weight) can impair cognitive performance, 
+                    mood, and increase feelings of fatigue. Keep a reusable water bottle with you and 
+                    aim to drink at least 2 liters of water throughout the day.
+                  </Typography>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <Chip
+                      label="Hydration"
+                      size="small"
+                      sx={{
+                        mr: 1,
+                        bgcolor: darkMode ? 'rgba(0, 188, 212, 0.2)' : 'rgba(0, 188, 212, 0.1)',
+                        color: '#00bcd4',
+                      }}
+                    />
+                    <Chip
+                      label="Brain Health"
+                      size="small"
+                      sx={{
+                        mr: 1,
+                        bgcolor: darkMode ? 'rgba(0, 188, 212, 0.2)' : 'rgba(0, 188, 212, 0.1)',
+                        color: '#00bcd4',
+                      }}
+                    />
+                  </Box>
+                </Box>
+                
+                <Box sx={{ mb: 3 }}>
+                  <Typography
+                    variant="body1"
+                    color="text.primary"
+                    gutterBottom
+                    sx={{ fontWeight: 'medium', mb: 1 }}
+                  >
+                    Microbreaks for Productivity
+                  </Typography>
+                  
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Taking short 5-minute breaks every hour can increase productivity by up to 30% 
+                    and reduce eye strain from screen use. Try the 20-20-20 rule: every 20 minutes, 
+                    look at something 20 feet away for 20 seconds.
+                  </Typography>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <Chip
+                      label="Productivity"
+                      size="small"
+                      sx={{
+                        mr: 1,
+                        bgcolor: darkMode ? 'rgba(0, 188, 212, 0.2)' : 'rgba(0, 188, 212, 0.1)',
+                        color: '#00bcd4',
+                      }}
+                    />
+                    <Chip
+                      label="Eye Health"
+                      size="small"
+                      sx={{
+                        mr: 1,
+                        bgcolor: darkMode ? 'rgba(0, 188, 212, 0.2)' : 'rgba(0, 188, 212, 0.1)',
+                        color: '#00bcd4',
+                      }}
+                    />
+                  </Box>
+                </Box>
+                
+                <Box>
+                  <Typography
+                    variant="body1"
+                    color="text.primary"
+                    gutterBottom
+                    sx={{ fontWeight: 'medium', mb: 1 }}
+                  >
+                    Morning Sunlight Exposure
+                  </Typography>
+                  
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Getting 10-30 minutes of morning sunlight exposure helps regulate your circadian rhythm, 
+                    improve mood, and boost vitamin D production. Try having your morning coffee outside or 
+                    taking a short walk after waking up.
+                  </Typography>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Chip
+                      label="Circadian Rhythm"
+                      size="small"
+                      sx={{
+                        mr: 1,
+                        bgcolor: darkMode ? 'rgba(0, 188, 212, 0.2)' : 'rgba(0, 188, 212, 0.1)',
+                        color: '#00bcd4',
+                      }}
+                    />
+                    <Chip
+                      label="Mental Health"
+                      size="small"
+                      sx={{
+                        mr: 1,
+                        bgcolor: darkMode ? 'rgba(0, 188, 212, 0.2)' : 'rgba(0, 188, 212, 0.1)',
+                        color: '#00bcd4',
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </Box>
+              
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+                <Button
+                  variant="text"
+                  startIcon={<ArrowBackIcon />}
+                  sx={{ 
+                    color: '#00bcd4',
+                    textTransform: 'none',
+                    fontWeight: 'medium' 
+                  }}
+                  onClick={() => {
+                    alert('Previous tip shown');
+                  }}
+                >
+                  Previous
+                </Button>
+                
+                <Button
+                  id="browse-tips-button"
+                  variant="outlined"
+                  sx={{ 
+                    color: '#00bcd4',
+                    borderColor: '#00bcd4',
+                    textTransform: 'none',
+                    fontWeight: 'medium',
+                    px: 2,
+                    '&:hover': {
+                      borderColor: '#00bcd4',
+                      bgcolor: 'rgba(0, 188, 212, 0.05)'
+                    }
+                  }}
+                  onClick={() => {
+                    const additionalTips = document.getElementById('additional-tips');
+                    const button = document.getElementById('browse-tips-button');
+                    
+                    if (additionalTips && button) {
+                      const isVisible = additionalTips.style.display !== 'none';
+                      
+                      if (isVisible) {
+                        additionalTips.style.display = 'none';
+                        button.textContent = 'Browse All Tips';
+                      } else {
+                        additionalTips.style.display = 'block';
+                        button.textContent = 'Show Less';
+                      }
+                    }
+                  }}
+                >
+                  Browse All Tips
+                </Button>
+                
+                <Button
+                  variant="text"
+                  endIcon={<ArrowForwardIcon />}
+                  sx={{ 
+                    color: '#00bcd4',
+                    textTransform: 'none',
+                    fontWeight: 'medium' 
+                  }}
+                  onClick={() => {
+                    alert('Next tip shown');
+                  }}
+                >
+                  Next
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+      
+      {/* Action Button */}
+      <Tooltip
+        title="Add new health record"
+        placement="left"
+        TransitionComponent={Zoom}
+      >
+        <Fab
+          color="primary"
+          aria-label="add"
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
+          }}
+          onClick={() => navigate('/records/add')}
+        >
+          <AddCircleIcon />
+        </Fab>
+      </Tooltip>
     </Container>
   );
 };
