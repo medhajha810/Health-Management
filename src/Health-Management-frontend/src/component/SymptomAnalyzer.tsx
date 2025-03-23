@@ -21,7 +21,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  AlertTitle
 } from '@mui/material';
 import { useTheme } from './ThemeContext';
 import SearchIcon from '@mui/icons-material/Search';
@@ -330,8 +331,8 @@ const SymptomAnalyzer: React.FC = () => {
                 <>
                   <Alert 
                     severity={
-                      results.possibleConditions.some(c => c.urgency === 'high') ? 'warning' :
-                      results.possibleConditions.some(c => c.urgency === 'medium') ? 'info' : 'success'
+                      results.possibleConditions.some((c: { urgency: string; }) => c.urgency === 'high') ? 'warning' :
+                      results.possibleConditions.some((c: { urgency: string; }) => c.urgency === 'medium') ? 'info' : 'success'
                     }
                     sx={{ mb: 3 }}
                     icon={
@@ -351,7 +352,7 @@ const SymptomAnalyzer: React.FC = () => {
                   </Typography>
                   
                   <List sx={{ mb: 2 }}>
-                    {results.possibleConditions.map((condition, index) => (
+                    {results.possibleConditions.map((condition: { urgency: string; name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; likelihood: string; description: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; matchingSymptoms: any[]; recommendations: any[]; }, index: React.Key | null | undefined) => (
                       <Paper 
                         key={index} 
                         elevation={0} 

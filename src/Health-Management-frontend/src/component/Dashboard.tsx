@@ -51,13 +51,15 @@ import BedtimeIcon from '@mui/icons-material/Bedtime';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import AddIcon from '@mui/icons-material/Add';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { actor } = useAuth();
   const { currentProfile } = useUser();
   const abhaLinked = currentProfile?.abhaId && currentProfile?.abhaCardLinked;
-  const { darkMode } = useTheme();
+  const [darkMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [timeFrame, setTimeFrame] = useState('daily');
 
@@ -81,11 +83,11 @@ const Dashboard: React.FC = () => {
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
       y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 80 }
+      transition: { duration: 0.5 }
     }
   };
 
@@ -134,49 +136,55 @@ const Dashboard: React.FC = () => {
   // Add particle animation components
   const ParticleAnimation = () => {
     return (
-      <Box sx={{ 
-        position: 'absolute', 
-        top: 0, 
-        left: 0, 
-        right: 0, 
-        bottom: 0, 
-        pointerEvents: 'none',
-        zIndex: 0,
-        overflow: 'hidden'
-      }}>
-        {[...Array(15)].map((_, i) => (
+      <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: -1 }}>
+        {Array.from({ length: 15 }).map((_, index) => (
           <Box
-            key={i}
+            key={index}
             component={motion.div}
             sx={{
               position: 'absolute',
-              width: Math.random() * 10 + 5,
-              height: Math.random() * 10 + 5,
+              width: Math.random() * 8 + 3,
+              height: Math.random() * 8 + 3,
               borderRadius: '50%',
-              background: darkMode 
-                ? `rgba(${Math.random() * 100 + 100}, ${Math.random() * 100 + 150}, ${Math.random() * 150 + 200}, 0.3)`
-                : `rgba(${Math.random() * 50 + 100}, ${Math.random() * 50 + 100}, ${Math.random() * 50 + 200}, 0.2)`,
-              filter: 'blur(1px)',
-              left: `${Math.random() * 100}%`,
+              background: darkMode ? 
+                `rgba(${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 255)}, ${Math.random() * 0.2 + 0.1})` :
+                `rgba(${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 255)}, ${Math.random() * 0.15 + 0.05})`,
               top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              filter: 'blur(1px)'
             }}
             animate={{
-              x: [0, Math.random() * 100 - 50, 0],
-              y: [0, Math.random() * 100 - 50, 0],
-              opacity: [0.4, 0.8, 0.4],
-              scale: [1, Math.random() * 0.5 + 1.5, 1],
+              y: [0, Math.random() * -100 - 50],
+              x: [0, Math.random() * 50 - 25],
+              opacity: [0, 0.7, 0]
             }}
             transition={{
-              duration: Math.random() * 20 + 20,
+              duration: Math.random() * 10 + 15,
               repeat: Infinity,
-              ease: "easeInOut",
-              delay: Math.random() * 5,
+              ease: "linear",
+              delay: Math.random() * 5
             }}
           />
         ))}
       </Box>
     );
   };
+
+  // Card interface for TypeScript
+  interface QuickAccessCard {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+    buttonText: string;
+    buttonColor: "primary" | "secondary" | "success";
+    bgColor: string;
+    iconAnimation: {
+      rotate?: number[] | undefined;
+      scale: number[];
+    };
+    buttonGradient: string;
+    onClick: () => void;
+  }
 
   return (
     <Container 
@@ -261,6 +269,22 @@ const Dashboard: React.FC = () => {
       {/* Add particle animation */}
       <ParticleAnimation />
       
+      {/* Pattern Overlay */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23${darkMode ? '999999' : '9C27B0'}' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          opacity: 0.2,
+          pointerEvents: 'none',
+          zIndex: -1
+        }}
+      />
+
       <motion.div variants={itemVariants}>
         <Paper
           elevation={darkMode ? 3 : 0}
@@ -339,7 +363,40 @@ const Dashboard: React.FC = () => {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', mb: 3, color: darkMode ? '#90caf9' : '#1976d2' }}>
+        <Typography variant="h5" gutterBottom sx={{ 
+          fontWeight: 'bold', 
+          mb: 3, 
+          color: darkMode ? '#90caf9' : '#1976d2',
+          position: 'relative',
+          display: 'inline-block',
+          fontFamily: "'Poppins', sans-serif",
+          letterSpacing: '0.5px',
+          fontSize: '1.8rem',
+          textShadow: darkMode ? '0 0 15px rgba(144, 202, 249, 0.3)' : '0 0 15px rgba(25, 118, 210, 0.15)',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: -5,
+            left: 0,
+            width: '60%',
+            height: 4,
+            background: 'linear-gradient(90deg, #6a1b9a, #4a148c, #6a1b9a)',
+            borderRadius: 2,
+            animation: 'gradient 3s ease infinite',
+            backgroundSize: '200% auto',
+            '@keyframes gradient': {
+              '0%': {
+                backgroundPosition: '0% center',
+              },
+              '50%': {
+                backgroundPosition: '100% center',
+              },
+              '100%': {
+                backgroundPosition: '0% center',
+              },
+            },
+          }
+        }}>
           Quick Access
         </Typography>
       </motion.div>
@@ -347,52 +404,70 @@ const Dashboard: React.FC = () => {
       <Grid container spacing={3} sx={{ mb: 5 }}>
         {[
           {
-            icon: <MedicalInformationIcon sx={{ fontSize: 80, color: darkMode ? '#90caf9' : '#1976d2' }} />,
+            icon: <MedicalInformationIcon sx={{ fontSize: 80, color: 'white' }} />,
             title: "Health Records",
             description: "View and manage your complete medical history, including test results, prescriptions, and diagnoses.",
             buttonText: "View Records",
-            buttonColor: "primary",
-            bgColor: darkMode ? '#2c3e50' : '#bbdefb',
+            buttonColor: "primary" as "primary",
+            bgColor: darkMode ? 'linear-gradient(135deg, #3949ab, #5c6bc0)' : 'linear-gradient(135deg, #5c6bc0, #9fa8da)',
             onClick: () => navigate('/records')
           },
           {
-            icon: <AddCircleIcon sx={{ fontSize: 80, color: darkMode ? '#81c784' : '#388e3c' }} />,
+            icon: <AddCircleIcon sx={{ fontSize: 80, color: 'white' }} />,
             title: "Add New Record",
             description: "Create and store new health records with the ability to upload documents, images, and other attachments.",
             buttonText: "Add Record",
-            buttonColor: "success",
-            bgColor: darkMode ? '#2c3e50' : '#c8e6c9',
+            buttonColor: "success" as "success",
+            bgColor: darkMode ? 'linear-gradient(135deg, #00695c, #00897b)' : 'linear-gradient(135deg, #00897b, #4db6ac)',
             onClick: () => navigate('/records/new')
           },
           {
-            icon: <MonitorHeartIcon sx={{ fontSize: 80, color: darkMode ? '#ce93d8' : '#9c27b0' }} />,
+            icon: <MonitorHeartIcon sx={{ fontSize: 80, color: 'white' }} />,
             title: "Disease Prediction",
             description: "Try our AI-powered disease prediction assistant to analyze your disease and get possible diagnoses.",
             buttonText: "Try Assistant",
-            buttonColor: "secondary",
-            bgColor: darkMode ? '#2c3e50' : '#f3e5f5',
+            buttonColor: "secondary" as "secondary",
+            bgColor: darkMode ? 'linear-gradient(135deg, #ad1457, #d81b60)' : 'linear-gradient(135deg, #d81b60, #ec407a)',
             onClick: handleDiseasePrediction
           },
           {
-            icon: <PersonIcon sx={{ fontSize: 80, color: darkMode ? '#ba68c8' : '#7b1fa2' }} />,
+            icon: <PersonIcon sx={{ fontSize: 80, color: 'white' }} />,
             title: "Profile Settings",
             description: "Update your personal information, privacy settings, and manage your account preferences.",
             buttonText: "Manage Profile",
-            buttonColor: "secondary",
-            bgColor: darkMode ? '#2c3e50' : '#e1bee7',
+            buttonColor: "secondary" as "secondary",
+            bgColor: darkMode ? 'linear-gradient(135deg, #6a1b9a, #8e24aa)' : 'linear-gradient(135deg, #8e24aa, #ab47bc)',
             onClick: () => navigate('/profile')
           }
         ].map((card, index) => (
           <Grid item xs={12} md={3} key={index} component={motion.div} variants={itemVariants}>
             <Card 
-              sx={cardStyle} 
-              component={motion.div}
-              whileHover={{ y: -10, boxShadow: '0 15px 30px rgba(0,0,0,0.2)' }}
+              sx={{
+                ...cardStyle,
+                overflow: 'hidden',
+                position: 'relative',
+                border: `1px solid ${darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'}`,
+                transition: 'all 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-8px)',
+                  boxShadow: darkMode ? '0 15px 30px rgba(0, 0, 0, 0.4)' : '0 15px 30px rgba(0, 0, 0, 0.15)'
+                },
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 4,
+                  background: card.bgColor,
+                  zIndex: 1
+                }
+              }}
             >
               <CardMedia
                 component="div"
                 sx={{
-                  backgroundColor: card.bgColor,
+                  background: card.bgColor,
                   height: 140,
                   display: 'flex',
                   alignItems: 'center',
@@ -402,11 +477,11 @@ const Dashboard: React.FC = () => {
                 }}
               >
                 <motion.div
-                  animate={{ 
+                  animate={{
                     scale: [1, 1.1, 1],
                     rotate: [0, 2, -2, 0]
                   }}
-                  transition={{ 
+                  transition={{
                     duration: 5, 
                     repeat: Infinity,
                     delay: index * 0.5
@@ -414,22 +489,110 @@ const Dashboard: React.FC = () => {
                 >
                   {card.icon}
                 </motion.div>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: -20,
+                    right: -20,
+                    width: 100,
+                    height: 100,
+                    borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    zIndex: 0
+                  }}
+                />
               </CardMedia>
               <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                <Typography variant="h6" gutterBottom fontWeight="bold" color={darkMode ? 'text.primary' : 'inherit'}>
+                <Typography 
+                  variant="h6" 
+                  gutterBottom 
+                  fontWeight="bold" 
+                  sx={{
+                    color: darkMode ? '#ffffff' : '#212121',
+                    position: 'relative',
+                    display: 'inline-block',
+                    fontFamily: "'Poppins', sans-serif",
+                    letterSpacing: '0.3px',
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: -2,
+                      left: 0,
+                      width: '40%',
+                      height: 2,
+                      background: card.bgColor,
+                      borderRadius: 2,
+                    }
+                  }}
+                >
                   {card.title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
+                <Typography 
+                  variant="body2" 
+                  color={darkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.7)'} 
+                  paragraph
+                  sx={{
+                    fontFamily: "'Roboto', sans-serif",
+                    lineHeight: 1.6,
+                    fontSize: '0.95rem',
+                    fontWeight: darkMode ? 300 : 400
+                  }}
+                >
                   {card.description}
                 </Typography>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                <motion.div 
+                  whileHover={{ 
+                    scale: 1.03,
+                    y: -2
+                  }} 
+                  whileTap={{ scale: 0.97 }}
+                >
                   <Button
                     variant="contained"
-                    color={card.buttonColor as "primary" | "secondary" | "success"}
+                    color={card.buttonColor}
                     fullWidth
                     onClick={card.onClick}
-                    sx={buttonStyle}
-                    endIcon={<ArrowForwardIcon />}
+                    sx={{
+                      ...buttonStyle,
+                      background: card.bgColor,
+                      position: 'relative',
+                      overflow: 'hidden',
+                      fontFamily: "'Poppins', sans-serif",
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      fontSize: '0.95rem',
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      '&::after': {
+                        content: '""',
+                        position: 'absolute',
+                        top: '-50%',
+                        left: '-50%',
+                        width: '200%',
+                        height: '200%',
+                        background: 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%)',
+                        transform: 'rotate(30deg)',
+                        transition: 'all 0.5s',
+                        opacity: 0
+                      },
+                      '&:hover::after': {
+                        opacity: 1,
+                        transform: 'rotate(30deg) translate(100%, -100%)',
+                        transition: 'all 0.5s'
+                      }
+                    }}
+                    endIcon={
+                      <motion.div
+                        animate={{ x: [0, 3, 0] }}
+                        transition={{ 
+                          duration: 1.5, 
+                          repeat: Infinity,
+                          ease: "easeInOut" 
+                        }}
+                      >
+                        <ArrowForwardIcon />
+                      </motion.div>
+                    }
                   >
                     {card.buttonText}
                   </Button>
@@ -817,112 +980,140 @@ const Dashboard: React.FC = () => {
         </Paper>
       </motion.div>
 
-      <motion.div variants={itemVariants}>
-        <Box 
+      {/* Assistance Banner */}
+      <Box
+        component={motion.div}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        whileHover={{ 
+          y: -5,
+          transition: { duration: 0.2 }
+        }}
+        sx={{
+          mb: 4,
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: 4,
+          boxShadow: darkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+          background: darkMode ? 'rgba(30, 30, 30, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+          backdropFilter: 'blur(10px)',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(60deg, rgba(33, 150, 243, 0.1), rgba(0, 188, 212, 0.1), rgba(156, 39, 176, 0.1))',
+            zIndex: 0
+          }
+        }}
+      >
+        {/* Animated Wave Background */}
+        <Box
           component={motion.div}
-          whileHover={{ y: -5, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
-          sx={{ 
-            borderRadius: 3, 
-            bgcolor: darkMode ? 'rgba(30, 30, 30, 0.9)' : 'rgba(255,255,255,0.9)',
-            p: 3, 
-            display: 'flex', 
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: {xs: 'wrap', md: 'nowrap'},
-            gap: 2,
-            backdropFilter: 'blur(10px)',
-            position: 'relative',
-            overflow: 'hidden',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: '50%',
-              background: darkMode 
-                ? 'linear-gradient(to top, rgba(33, 150, 243, 0.1), transparent)'
-                : 'linear-gradient(to top, rgba(33, 150, 243, 0.05), transparent)',
-              zIndex: 0,
-              animation: 'wave 8s ease-in-out infinite alternate',
-              '@keyframes wave': {
-                '0%': {
-                  transform: 'translateY(20%) scale(1.2, 1)',
-                },
-                '100%': {
-                  transform: 'translateY(10%) scale(1.5, 0.8)',
-                },
-              },
-            },
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: '30%',
-              background: darkMode 
-                ? 'linear-gradient(to top, rgba(33, 150, 243, 0.08), transparent)'
-                : 'linear-gradient(to top, rgba(33, 150, 243, 0.03), transparent)',
-              zIndex: 0,
-              animation: 'wave2 6s ease-in-out infinite alternate-reverse',
-              '@keyframes wave2': {
-                '0%': {
-                  transform: 'translateY(30%) scale(1.4, 1)',
-                },
-                '100%': {
-                  transform: 'translateY(5%) scale(1.2, 0.9)',
-                },
-              },
-            }
+          animate={{ 
+            x: [0, -100],
           }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, position: 'relative', zIndex: 1 }}>
-            <Avatar 
-              component={motion.div}
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              sx={{ bgcolor: darkMode ? '#2196f3' : '#1976d2', width: 50, height: 50 }}
-            >
-              <HealthAndSafetyIcon fontSize="large" />
-            </Avatar>
-            <Box>
-              <Typography variant="h6" fontWeight="bold" color="text.primary">Need assistance?</Typography>
-              <Typography variant="body2" color="text.primary">
-                Contact our support team for help with your account or health records
-              </Typography>
-            </Box>
-          </Box>
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }}
-            style={{ position: 'relative', zIndex: 1 }}
-          >
-            <Button 
-              variant="outlined" 
-              color="primary"
-              onClick={() => navigate('/contact')}
-              sx={{
-                textTransform: 'none',
-                fontWeight: 'bold',
-                py: 1,
-                borderRadius: 2,
-                px: 3,
-                whiteSpace: 'nowrap',
-                '&:hover': {
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-                },
-                ...(darkMode ? {
-                  borderColor: '#90caf9',
-                  color: '#90caf9'
-                } : {})
-              } as SxProps<Theme>}
-            >
-              Contact Support
-            </Button>
-          </motion.div>
+          transition={{ 
+            duration: 10,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: -100,
+            height: '100%',
+            background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2300bcd4' fill-opacity='0.08' d='M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,224C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat-x',
+            backgroundSize: '100% 100%',
+            zIndex: 0,
+            opacity: 0.5
+          }}
+        />
+        
+        <Box
+          component={motion.div}
+          animate={{ 
+            x: [0, -100],
+          }}
+          transition={{ 
+            duration: 15,
+            repeat: Infinity,
+            ease: "linear",
+            delay: 0.5
+          }}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: -100,
+            height: '100%',
+            background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%239C27B0' fill-opacity='0.05' d='M0,96L48,128C96,160,192,224,288,213.3C384,203,480,117,576,101.3C672,85,768,139,864,144C960,149,1056,107,1152,112C1248,117,1344,171,1392,197.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat-x',
+            backgroundSize: '100% 100%',
+            zIndex: 0,
+            opacity: 0.5
+          }}
+        />
+
+        {/* Pattern Overlay */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300bcd4' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`,
+            zIndex: 0,
+            opacity: 0.4
+          }}
+        />
+        
+        <Box sx={{ position: 'relative', flexGrow: 1, p: 3, zIndex: 1 }}>
+          <Grid container alignItems="center">
+            <Grid item xs={12} md={8}>
+              <Box>
+                <Typography variant="h6" fontWeight="bold" color="text.primary">Need assistance?</Typography>
+                <Typography variant="body2" color="text.primary">
+                  Contact our support team for help with your account or health records
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' }, mt: { xs: 2, md: 0 } }}>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<HelpOutlineIcon />}
+                component={motion.div}
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: '0 6px 20px rgba(0, 188, 212, 0.4)',
+                }}
+                whileTap={{ scale: 0.95 }}
+                sx={{ 
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 'bold',
+                  background: 'linear-gradient(45deg, #00bcd4 30%, #2196f3 90%)',
+                  px: 3,
+                  py: 1,
+                  boxShadow: '0 4px 10px rgba(0, 188, 212, 0.3)',
+                }}
+                onClick={() => {
+                  alert('Support contact requested!');
+                }}
+              >
+                Contact Support
+              </Button>
+            </Grid>
+          </Grid>
         </Box>
-      </motion.div>
+      </Box>
 
       {/* Disease Prediction Floating Action Button */}
       <Zoom in={true} style={{ transitionDelay: '500ms' }}>
@@ -932,6 +1123,7 @@ const Dashboard: React.FC = () => {
             bottom: 32,
             right: 32,
             zIndex: 1000,
+            filter: 'drop-shadow(0 6px 16px rgba(156, 39, 176, 0.4))',
             '&::before': {
               content: '""',
               position: 'absolute',
@@ -941,14 +1133,39 @@ const Dashboard: React.FC = () => {
               bottom: 0,
               borderRadius: '50%',
               background: 'rgba(156, 39, 176, 0.3)',
-              animation: 'pulse 2s infinite',
+              animation: 'pulse 3s infinite',
               '@keyframes pulse': {
                 '0%': {
                   transform: 'scale(1)',
-                  opacity: 1,
+                  opacity: 0.8,
                 },
                 '50%': {
-                  transform: 'scale(1.5)',
+                  transform: 'scale(1.8)',
+                  opacity: 0,
+                },
+                '100%': {
+                  transform: 'scale(1)',
+                  opacity: 0,
+                },
+              },
+            },
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              borderRadius: '50%',
+              background: 'rgba(156, 39, 176, 0.2)',
+              animation: 'pulse2 3s infinite 1s',
+              '@keyframes pulse2': {
+                '0%': {
+                  transform: 'scale(1)',
+                  opacity: 0.5,
+                },
+                '50%': {
+                  transform: 'scale(2.2)',
                   opacity: 0,
                 },
                 '100%': {
@@ -960,193 +1177,477 @@ const Dashboard: React.FC = () => {
           }}
         >
           <motion.div
-            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileHover={{ scale: 1.15, rotate: 5 }}
             whileTap={{ scale: 0.9 }}
+            animate={{ 
+              y: [0, -6, 0],
+            }}
+            transition={{ 
+              y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+              scale: { type: "spring", stiffness: 400, damping: 10 },
+              rotate: { type: "spring", stiffness: 300, damping: 10 }
+            }}
           >
-            <Tooltip title="Try Disease Prediction Assistant" placement="left">
+            <Tooltip 
+              title="Try Disease Prediction Assistant" 
+              placement="left"
+              sx={{ 
+                '& .MuiTooltip-tooltip': { 
+                  background: darkMode ? 'rgba(156, 39, 176, 0.9)' : 'rgba(156, 39, 176, 0.8)',
+                  backdropFilter: 'blur(4px)',
+                  borderRadius: 2,
+                  boxShadow: '0 4px 20px rgba(156, 39, 176, 0.4)',
+                  fontSize: '0.9rem',
+                  padding: '10px 16px',
+                }
+              }}
+            >
               <Fab
                 color="secondary"
-                aria-label="disease prediction"
                 onClick={handleDiseasePrediction}
                 sx={{
-                  boxShadow: '0 4px 20px rgba(156, 39, 176, 0.4)',
-                  background: 'linear-gradient(45deg, #9c27b0 30%, #673ab7 90%)',
-                  '&:hover': {
-                    boxShadow: '0 6px 30px rgba(156, 39, 176, 0.6)',
+                  background: 'linear-gradient(45deg, #9c27b0 30%, #d500f9 90%)',
+                  boxShadow: '0 3px 15px 2px rgba(156, 39, 176, 0.4)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    top: '-50%',
+                    left: '-50%',
+                    width: '200%',
+                    height: '200%',
+                    background: 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%)',
+                    transform: 'rotate(30deg)',
+                    animation: 'shine 6s infinite',
+                    '@keyframes shine': {
+                      '0%': { transform: 'translateX(-100%) rotate(30deg)' },
+                      '15%': { transform: 'translateX(100%) rotate(30deg)' },
+                      '100%': { transform: 'translateX(100%) rotate(30deg)' },
+                    }
                   }
                 }}
               >
-                <MonitorHeartIcon />
+                <LocalHospitalIcon />
               </Fab>
             </Tooltip>
           </motion.div>
         </Box>
       </Zoom>
 
+      {/* Add Feature Button */}
+      <Tooltip 
+        title="Add Health Record" 
+        placement="left"
+        sx={{ 
+          '& .MuiTooltip-tooltip': { 
+            background: darkMode ? 'rgba(33, 150, 243, 0.9)' : 'rgba(33, 150, 243, 0.8)',
+            backdropFilter: 'blur(4px)',
+            borderRadius: 2,
+            boxShadow: '0 4px 20px rgba(33, 150, 243, 0.4)',
+            fontSize: '0.9rem',
+            padding: '10px 16px',
+          }
+        }}
+      >
+        <Box
+          component={motion.div}
+          whileHover={{ scale: 1.1, rotate: -5 }}
+          whileTap={{ scale: 0.9 }}
+          sx={{
+            position: 'fixed',
+            bottom: 32,
+            right: 100,
+            zIndex: 1000,
+            filter: 'drop-shadow(0 4px 10px rgba(33, 150, 243, 0.4))',
+          }}
+        >
+          <Fab 
+            color="primary" 
+            size="medium"
+            onClick={() => { 
+              alert('Add Health Record clicked!'); 
+            }}
+            sx={{
+              background: 'linear-gradient(45deg, #2196f3 30%, #00bcd4 90%)',
+              boxShadow: '0 3px 15px 2px rgba(33, 150, 243, 0.4)',
+            }}
+          >
+            <motion.div
+              animate={{ rotate: 180 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <AddIcon />
+            </motion.div>
+          </Fab>
+        </Box>
+      </Tooltip>
+
       {/* Feature Cards */}
-      <Grid container spacing={4} sx={{ mt: 2 }}>
-        {/* Disease Prediction Card */}
-        <Grid item xs={12} sm={6} md={4}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Card
-              sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                bgcolor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'white',
-                borderRadius: 4,
-                boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+      <Box
+        component={motion.div}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        sx={{ mb: 4, mt: 2 }}
+      >
+        <Typography variant="h5" gutterBottom sx={{ 
+          fontWeight: 'bold', 
+          mb: 3,
+          position: 'relative',
+          display: 'inline-block',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: -8,
+            left: 0,
+            width: '40%',
+            height: 3,
+            background: 'linear-gradient(90deg, #00bcd4, rgba(0, 188, 212, 0.2))',
+            borderRadius: 2,
+          }
+        }}>
+          Health Management Features
+        </Typography>
+        
+        <Grid container spacing={3}>
+          {/* Disease Prediction Card */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Box
+              component={motion.div}
+              whileHover={{ 
+                y: -10,
+                transition: { duration: 0.2 }
               }}
+              sx={{ height: '100%' }}
             >
-              <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                <LocalHospitalIcon
+              <Card 
+                sx={{
+                  bgcolor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'white',
+                  borderRadius: 4,
+                  boxShadow: darkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+                  overflow: 'hidden',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-5px)',
+                    boxShadow: darkMode ? '0 12px 40px rgba(0, 0, 0, 0.4)' : '0 12px 40px rgba(0, 0, 0, 0.15)',
+                  },
+                  position: 'relative',
+                  height: '100%',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 6,
+                    background: 'linear-gradient(90deg, #FF4D4D, #FF008C)',
+                    opacity: 0.8,
+                    zIndex: 1
+                  },
+                  backgroundImage: 'linear-gradient(to bottom right, rgba(255, 77, 77, 0.05), rgba(255, 0, 140, 0.08))'
+                }}
+              >
+                <Box
                   sx={{
-                    fontSize: 50,
-                    mb: 2,
-                    color: '#e91e63',
+                    position: 'absolute',
+                    right: -20,
+                    top: -20,
+                    width: 120,
+                    height: 120,
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(255, 77, 77, 0.15) 0%, rgba(255, 0, 140, 0) 70%)',
+                    zIndex: 0
                   }}
                 />
-                <Typography gutterBottom variant="h5" component="h2">
-                  Disease Prediction
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Use our advanced AI tools to predict potential health risks based on your symptoms and medical history.
-                </Typography>
-              </CardContent>
-              <Box sx={{ p: 2 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  onClick={handleDiseasePrediction}
-                  sx={{
-                    py: 1.5,
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontWeight: 'bold',
-                    bgcolor: '#e91e63',
-                    '&:hover': { bgcolor: '#c2185b' },
-                  }}
-                >
-                  Start Prediction
-                </Button>
-              </Box>
-            </Card>
-          </motion.div>
-        </Grid>
-
-        {/* Physical Fitness Card */}
-        <Grid item xs={12} sm={6} md={4}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Card
-              sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                bgcolor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'white',
-                borderRadius: 4,
-                boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
-              }}
-            >
-              <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                <FitnessCenterIcon
-                  sx={{
-                    fontSize: 50,
-                    mb: 2,
-                    color: '#4caf50',
-                  }}
-                />
-                <Typography gutterBottom variant="h5" component="h2">
-                  Fitness Tracking
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Track your workouts, set fitness goals, and monitor your progress over time to maintain a healthy lifestyle.
-                </Typography>
-              </CardContent>
-              <Box sx={{ p: 2 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  sx={{
-                    py: 1.5,
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontWeight: 'bold',
-                    bgcolor: '#4caf50',
-                    '&:hover': { bgcolor: '#388e3c' },
-                  }}
-                >
-                  View Fitness Data
-                </Button>
-              </Box>
-            </Card>
-          </motion.div>
-        </Grid>
-
-        {/* Analytics Card */}
-        <Grid item xs={12} sm={6} md={4}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Card
-              sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                bgcolor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'white',
-                borderRadius: 4,
-                boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
-              }}
-            >
-              <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                <BarChartIcon
-                  sx={{
-                    fontSize: 50,
-                    mb: 2,
-                    color: '#3f51b5',
-                  }}
-                />
-                <Typography gutterBottom variant="h5" component="h2">
-                  Health Analytics
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Visualize your health data trends and gain insights into your overall wellbeing. Track vital signs, medication adherence, and physical activity.
-                </Typography>
-              </CardContent>
-              <Box sx={{ p: 2 }}>
-                <Link to="/analytics" style={{ textDecoration: 'none' }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{
-                      py: 1.5,
+                <CardContent sx={{ flexGrow: 1, p: 3, position: 'relative' }}>
+                  <Box 
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      mb: 2, 
+                      background: 'linear-gradient(45deg, rgba(255, 77, 77, 0.12), rgba(255, 0, 140, 0.12))',
+                      p: 1.5,
                       borderRadius: 2,
-                      textTransform: 'none',
-                      fontWeight: 'bold',
-                      bgcolor: '#3f51b5',
-                      '&:hover': { bgcolor: '#303f9f' },
                     }}
                   >
-                    View Analytics
-                  </Button>
-                </Link>
-              </Box>
-            </Card>
-          </motion.div>
+                    <Avatar
+                      component={motion.div}
+                      animate={{ 
+                        scale: [1, 1.15, 1],
+                        rotate: [0, 10, 0]
+                      }}
+                      transition={{ 
+                        duration: 3,
+                        repeat: Infinity, 
+                        ease: "easeInOut" 
+                      }}
+                      sx={{ 
+                        bgcolor: 'rgba(255, 77, 77, 0.9)', 
+                        mr: 2,
+                        boxShadow: '0 4px 20px rgba(255, 77, 77, 0.4)'
+                      }}
+                    >
+                      <LocalHospitalIcon />
+                    </Avatar>
+                    <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold', background: 'linear-gradient(45deg, #FF4D4D, #FF008C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                      Disease Prediction
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Use our advanced AI tools to predict potential health risks based on your symptoms and medical history.
+                  </Typography>
+                  <Box sx={{ mt: 3, textAlign: 'center' }}>
+                    <Button
+                      component={motion.div}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      variant="contained"
+                      onClick={handleDiseasePrediction}
+                      sx={{ 
+                        background: 'linear-gradient(45deg, #FF4D4D, #FF008C)',
+                        borderRadius: 8,
+                        px: 3,
+                        boxShadow: '0 4px 15px rgba(255, 77, 77, 0.4)',
+                        '&:hover': {
+                          background: 'linear-gradient(45deg, #FF366F, #FF0066)',
+                          boxShadow: '0 6px 20px rgba(255, 77, 77, 0.5)',
+                        }
+                      }}
+                    >
+                      Try Now
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Box>
+          </Grid>
+
+          {/* Physical Fitness Card */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Box
+              component={motion.div}
+              whileHover={{ 
+                y: -10,
+                transition: { duration: 0.2 }
+              }}
+              sx={{ height: '100%' }}
+            >
+              <Card
+                sx={{
+                  height: '100%',
+                  bgcolor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'white',
+                  borderRadius: 4,
+                  boxShadow: darkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+                  overflow: 'hidden',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-5px)',
+                    boxShadow: darkMode ? '0 12px 40px rgba(0, 0, 0, 0.4)' : '0 12px 40px rgba(0, 0, 0, 0.15)',
+                  },
+                  position: 'relative',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 6,
+                    background: 'linear-gradient(90deg, #4CAF50, #8BC34A)',
+                    opacity: 0.8,
+                    zIndex: 1
+                  },
+                  backgroundImage: 'linear-gradient(to bottom right, rgba(76, 175, 80, 0.05), rgba(139, 195, 74, 0.08))'
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    right: -20,
+                    top: -20,
+                    width: 120,
+                    height: 120,
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(76, 175, 80, 0.15) 0%, rgba(139, 195, 74, 0) 70%)',
+                    zIndex: 0
+                  }}
+                />
+                <CardContent sx={{ flexGrow: 1, p: 3, position: 'relative' }}>
+                  <Box 
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      mb: 2, 
+                      background: 'linear-gradient(45deg, rgba(76, 175, 80, 0.12), rgba(139, 195, 74, 0.12))',
+                      p: 1.5,
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Avatar
+                      component={motion.div}
+                      animate={{ 
+                        scale: [1, 1.15, 1],
+                        rotate: [0, 10, 0]
+                      }}
+                      transition={{ 
+                        duration: 3.5,
+                        repeat: Infinity, 
+                        ease: "easeInOut",
+                        delay: 0.2
+                      }}
+                      sx={{ 
+                        bgcolor: 'rgba(76, 175, 80, 0.9)', 
+                        mr: 2,
+                        boxShadow: '0 4px 20px rgba(76, 175, 80, 0.4)'
+                      }}
+                    >
+                      <FitnessCenterIcon />
+                    </Avatar>
+                    <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold', background: 'linear-gradient(45deg, #4CAF50, #8BC34A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                      Fitness Tracking
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Track your workouts, set fitness goals, and monitor your progress over time to maintain a healthy lifestyle.
+                  </Typography>
+                  <Box sx={{ mt: 3, textAlign: 'center' }}>
+                    <Button
+                      component={motion.div}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      variant="contained"
+                      sx={{ 
+                        background: 'linear-gradient(45deg, #4CAF50, #8BC34A)',
+                        borderRadius: 8,
+                        px: 3,
+                        boxShadow: '0 4px 15px rgba(76, 175, 80, 0.4)',
+                        '&:hover': {
+                          background: 'linear-gradient(45deg, #43A047, #7CB342)',
+                          boxShadow: '0 6px 20px rgba(76, 175, 80, 0.5)',
+                        }
+                      }}
+                    >
+                      View Fitness Data
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Box>
+          </Grid>
+
+          {/* Analytics Card */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Box
+              component={motion.div}
+              whileHover={{ 
+                y: -10,
+                transition: { duration: 0.2 }
+              }}
+              sx={{ height: '100%' }}
+            >
+              <Card
+                sx={{
+                  height: '100%',
+                  bgcolor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'white',
+                  borderRadius: 4,
+                  boxShadow: darkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+                  overflow: 'hidden',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-5px)',
+                    boxShadow: darkMode ? '0 12px 40px rgba(0, 0, 0, 0.4)' : '0 12px 40px rgba(0, 0, 0, 0.15)',
+                  },
+                  position: 'relative',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 6,
+                    background: 'linear-gradient(90deg, #3F51B5, #2196F3)',
+                    opacity: 0.8,
+                    zIndex: 1
+                  },
+                  backgroundImage: 'linear-gradient(to bottom right, rgba(63, 81, 181, 0.05), rgba(33, 150, 243, 0.08))'
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    right: -20,
+                    top: -20,
+                    width: 120,
+                    height: 120,
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(63, 81, 181, 0.15) 0%, rgba(33, 150, 243, 0) 70%)',
+                    zIndex: 0
+                  }}
+                />
+                <CardContent sx={{ flexGrow: 1, p: 3, position: 'relative' }}>
+                  <Box 
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      mb: 2, 
+                      background: 'linear-gradient(45deg, rgba(63, 81, 181, 0.12), rgba(33, 150, 243, 0.12))',
+                      p: 1.5,
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Avatar
+                      component={motion.div}
+                      animate={{ 
+                        scale: [1, 1.15, 1],
+                        rotate: [0, 10, 0]
+                      }}
+                      transition={{ 
+                        duration: 4,
+                        repeat: Infinity, 
+                        ease: "easeInOut",
+                        delay: 0.4
+                      }}
+                      sx={{ 
+                        bgcolor: 'rgba(63, 81, 181, 0.9)', 
+                        mr: 2,
+                        boxShadow: '0 4px 20px rgba(63, 81, 181, 0.4)'
+                      }}
+                    >
+                      <BarChartIcon />
+                    </Avatar>
+                    <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold', background: 'linear-gradient(45deg, #3F51B5, #2196F3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                      Health Analytics
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Visualize your health data trends and gain insights into your overall wellbeing. Track vital signs, medication adherence, and physical activity.
+                  </Typography>
+                  <Box sx={{ mt: 3, textAlign: 'center' }}>
+                    <Button
+                      component={motion.div}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      variant="contained"
+                      sx={{ 
+                        background: 'linear-gradient(45deg, #3F51B5, #2196F3)',
+                        borderRadius: 8,
+                        px: 3,
+                        boxShadow: '0 4px 15px rgba(63, 81, 181, 0.4)',
+                        '&:hover': {
+                          background: 'linear-gradient(45deg, #303F9F, #1E88E5)',
+                          boxShadow: '0 6px 20px rgba(63, 81, 181, 0.5)',
+                        }
+                      }}
+                    >
+                      View Analytics
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
 
       {/* New Health Components Section */}
       <motion.div variants={itemVariants}>
@@ -1162,8 +1663,13 @@ const Dashboard: React.FC = () => {
             sx={{
               height: '100%',
               borderRadius: 3,
-              boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
-              overflow: 'hidden'
+              boxShadow: darkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: darkMode ? '0 12px 40px rgba(0, 0, 0, 0.4)' : '0 12px 40px rgba(0, 0, 0, 0.15)',
+              },
             }}
           >
             <CardContent>
@@ -1353,8 +1859,13 @@ const Dashboard: React.FC = () => {
             sx={{
               height: '100%',
               borderRadius: 3,
-              boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
-              overflow: 'hidden'
+              boxShadow: darkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: darkMode ? '0 12px 40px rgba(0, 0, 0, 0.4)' : '0 12px 40px rgba(0, 0, 0, 0.15)',
+              },
             }}
           >
             <CardContent>
@@ -1555,8 +2066,13 @@ const Dashboard: React.FC = () => {
           <Card
             sx={{
               borderRadius: 3,
-              boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
-              overflow: 'hidden'
+              boxShadow: darkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: darkMode ? '0 12px 40px rgba(0, 0, 0, 0.4)' : '0 12px 40px rgba(0, 0, 0, 0.15)',
+              },
             }}
           >
             <CardContent>
@@ -2111,8 +2627,13 @@ const Dashboard: React.FC = () => {
             sx={{
               height: '100%',
               borderRadius: 3,
-              boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
-              overflow: 'hidden'
+              boxShadow: darkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: darkMode ? '0 12px 40px rgba(0, 0, 0, 0.4)' : '0 12px 40px rgba(0, 0, 0, 0.15)',
+              },
             }}
           >
             <CardContent>
@@ -2484,8 +3005,13 @@ const Dashboard: React.FC = () => {
             sx={{
               height: '100%',
               borderRadius: 3,
-              boxShadow: darkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
-              overflow: 'hidden'
+              boxShadow: darkMode ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: darkMode ? '0 12px 40px rgba(0, 0, 0, 0.4)' : '0 12px 40px rgba(0, 0, 0, 0.15)',
+              },
             }}
           >
             <CardContent>
@@ -2739,27 +3265,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
-      
-      {/* Action Button */}
-      <Tooltip
-        title="Add new health record"
-        placement="left"
-        TransitionComponent={Zoom}
-      >
-        <Fab
-          color="primary"
-          aria-label="add"
-          sx={{
-            position: 'fixed',
-            bottom: 24,
-            right: 24,
-            boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
-          }}
-          onClick={() => navigate('/records/add')}
-        >
-          <AddCircleIcon />
-        </Fab>
-      </Tooltip>
     </Container>
   );
 };

@@ -21,6 +21,7 @@ import {
 } from '@mui/icons-material';
 import { useTheme } from './ThemeContext';
 import { motion } from 'framer-motion';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 // Mock data for charts
 const mockVitalData = {
@@ -85,7 +86,7 @@ const HealthAnalytics: React.FC = () => {
     setActiveTab(newValue);
   };
 
-  const handleTimeRangeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleTimeRangeChange = (event: SelectChangeEvent) => {
     setTimeRange(event.target.value as string);
   };
 

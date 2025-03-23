@@ -26,6 +26,7 @@ import {
 import { useTheme } from './ThemeContext';
 import { motion, LazyMotion, domAnimation } from 'framer-motion';
 import { NotificationContext } from '../App';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 interface Notification {
   id: string;
@@ -132,8 +133,8 @@ const Notifications: React.FC = () => {
     setActiveTab(newValue);
   };
 
-  const handleFilterChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setFilter(event.target.value as string);
+  const handleFilterChange = (event: SelectChangeEvent) => {
+    setFilter(event.target.value);
   };
 
   const handleReadNotification = (id: string) => {

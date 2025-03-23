@@ -194,10 +194,14 @@ const HealthDataVisualization: React.FC = () => {
   const currentInsights = healthData[dataType as keyof typeof healthData].insights;
   
   // Calculate average value
-  const average = Math.round(currentData.reduce((sum: number, value: number) => sum + value, 0) / currentData.length);
+  const average = Array.isArray(currentData) 
+    ? Math.round(currentData.reduce((sum: number, value: number) => sum + value, 0) / currentData.length)
+    : 0;
   
   // Calculate percentage change (mock calculation)
-  const percentChange = Math.round((currentData[currentData.length - 1] - currentData[0]) / currentData[0] * 100);
+  const percentChange = Array.isArray(currentData) && currentData.length > 0
+    ? Math.round(((currentData[currentData.length - 1] - currentData[0]) / currentData[0]) * 100)
+    : 0;
   
   return (
     <Card
@@ -338,7 +342,9 @@ const HealthDataVisualization: React.FC = () => {
                 
                 <Chart 
                   type={dataType} 
-                  data={currentData.map((value: number) => value * 90 / Math.max(...currentData))} 
+                  data={Array.isArray(currentData) 
+                    ? currentData.map((value: number) => value * 90 / Math.max(...currentData))
+                    : []} 
                   color={currentColor} 
                 />
                 
