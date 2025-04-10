@@ -26,6 +26,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import SimpleNotifications from './component/SimpleNotifications';
 import TeleHealth from './component/TeleHealth';
 import HealthAnalytics from './component/HealthAnalytics';
+import HealthDataVisualization from './component/HealthDataVisualization';
 import { applyLoaderFix } from './utils/loaderFix';
 
 // Create a notification context directly in App.tsx to avoid circular dependencies
@@ -365,6 +366,7 @@ function AppContent() {
             <Route path="/notifications" element={<SimpleNotifications />} />
             <Route path="/telehealth" element={<TeleHealth />} />
             <Route path="/analytics" element={<HealthAnalytics />} />
+            <Route path="/fitness" element={<HealthDataVisualization />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Box>

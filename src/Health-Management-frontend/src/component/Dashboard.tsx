@@ -1516,6 +1516,7 @@ const Dashboard: React.FC = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       variant="contained"
+                      onClick={() => navigate('/fitness')}
                       sx={{ 
                         background: 'linear-gradient(45deg, #4CAF50, #8BC34A)',
                         borderRadius: 8,
@@ -1628,6 +1629,7 @@ const Dashboard: React.FC = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       variant="contained"
+                      onClick={() => navigate('/analytics')}
                       sx={{ 
                         background: 'linear-gradient(45deg, #3F51B5, #2196F3)',
                         borderRadius: 8,

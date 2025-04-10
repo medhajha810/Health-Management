@@ -195,259 +195,271 @@ const HealthDataVisualization: React.FC = () => {
   
   // Calculate average value
   const average = Array.isArray(currentData) 
-    ? Math.round(currentData.reduce((sum: number, value: number) => sum + value, 0) / currentData.length)
+    ? Math.round((currentData as number[]).reduce((sum: number, value: number) => sum + value, 0) / (currentData as number[]).length)
     : 0;
   
   // Calculate percentage change (mock calculation)
   const percentChange = Array.isArray(currentData) && currentData.length > 0
-    ? Math.round(((currentData[currentData.length - 1] - currentData[0]) / currentData[0]) * 100)
+    ? Math.round((((currentData as number[])[currentData.length - 1] - (currentData as number[])[0]) / (currentData as number[])[0]) * 100)
     : 0;
   
   return (
-    <Card
-      elevation={darkMode ? 3 : 1}
-      sx={{
-        borderRadius: 2,
-        overflow: 'hidden',
-        mb: 3,
-        background: darkMode ? 'rgba(30, 30, 30, 0.9)' : 'white',
-      }}
-    >
-      <CardContent sx={{ p: 0 }}>
-        <Box sx={{
-          p: 3,
-          background: darkMode ? 'rgba(25, 118, 210, 0.1)' : 'rgba(25, 118, 210, 0.05)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <TimelineIcon sx={{ color: '#1976D2', mr: 2, fontSize: 28 }} />
-            <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
-              Health Data Insights
-            </Typography>
+    <>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          <DirectionsRunIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+          Fitness Data
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Monitor your fitness progress and achieve your health goals
+        </Typography>
+      </Box>
+    
+      <Card
+        elevation={darkMode ? 3 : 1}
+        sx={{
+          borderRadius: 2,
+          overflow: 'hidden',
+          mb: 3,
+          background: darkMode ? 'rgba(30, 30, 30, 0.9)' : 'white',
+        }}
+      >
+        <CardContent sx={{ p: 0 }}>
+          <Box sx={{
+            p: 3,
+            background: darkMode ? 'rgba(25, 118, 210, 0.1)' : 'rgba(25, 118, 210, 0.05)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <TimelineIcon sx={{ color: '#1976D2', mr: 2, fontSize: 28 }} />
+              <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
+                Health Data Insights
+              </Typography>
+            </Box>
+            
+            <ButtonGroup size="small" variant="outlined">
+              <Button 
+                onClick={() => handleTimeRangeChange('daily')}
+                sx={{ 
+                  fontSize: '0.75rem',
+                  backgroundColor: timeRange === 'daily' ? (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(25, 118, 210, 0.1)') : 'transparent',
+                  borderColor: 'divider',
+                  color: timeRange === 'daily' ? 'primary.main' : 'text.secondary',
+                  '&:hover': { backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(25, 118, 210, 0.05)' }
+                }}
+              >
+                Daily
+              </Button>
+              <Button 
+                onClick={() => handleTimeRangeChange('week')}
+                sx={{ 
+                  fontSize: '0.75rem',
+                  backgroundColor: timeRange === 'week' ? (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(25, 118, 210, 0.1)') : 'transparent',
+                  borderColor: 'divider',
+                  color: timeRange === 'week' ? 'primary.main' : 'text.secondary',
+                  '&:hover': { backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(25, 118, 210, 0.05)' }
+                }}
+              >
+                Weekly
+              </Button>
+              <Button 
+                onClick={() => handleTimeRangeChange('month')}
+                sx={{ 
+                  fontSize: '0.75rem',
+                  backgroundColor: timeRange === 'month' ? (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(25, 118, 210, 0.1)') : 'transparent',
+                  borderColor: 'divider',
+                  color: timeRange === 'month' ? 'primary.main' : 'text.secondary',
+                  '&:hover': { backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(25, 118, 210, 0.05)' }
+                }}
+              >
+                Monthly
+              </Button>
+            </ButtonGroup>
           </Box>
           
-          <ButtonGroup size="small" variant="outlined">
-            <Button 
-              onClick={() => handleTimeRangeChange('daily')}
-              sx={{ 
-                fontSize: '0.75rem',
-                backgroundColor: timeRange === 'daily' ? (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(25, 118, 210, 0.1)') : 'transparent',
-                borderColor: 'divider',
-                color: timeRange === 'daily' ? 'primary.main' : 'text.secondary',
-                '&:hover': { backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(25, 118, 210, 0.05)' }
-              }}
-            >
-              Daily
-            </Button>
-            <Button 
-              onClick={() => handleTimeRangeChange('week')}
-              sx={{ 
-                fontSize: '0.75rem',
-                backgroundColor: timeRange === 'week' ? (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(25, 118, 210, 0.1)') : 'transparent',
-                borderColor: 'divider',
-                color: timeRange === 'week' ? 'primary.main' : 'text.secondary',
-                '&:hover': { backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(25, 118, 210, 0.05)' }
-              }}
-            >
-              Weekly
-            </Button>
-            <Button 
-              onClick={() => handleTimeRangeChange('month')}
-              sx={{ 
-                fontSize: '0.75rem',
-                backgroundColor: timeRange === 'month' ? (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(25, 118, 210, 0.1)') : 'transparent',
-                borderColor: 'divider',
-                color: timeRange === 'month' ? 'primary.main' : 'text.secondary',
-                '&:hover': { backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(25, 118, 210, 0.05)' }
-              }}
-            >
-              Monthly
-            </Button>
-          </ButtonGroup>
-        </Box>
-        
-        <Divider />
-        
-        <Box sx={{ p: 3 }}>
-          <Tabs
-            value={dataType}
-            onChange={handleDataTypeChange}
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{
-              mb: 3,
-              '& .MuiTab-root': {
-                textTransform: 'none',
-                minWidth: 'auto',
-                px: 2,
-                fontSize: '0.875rem',
-              }
-            }}
-          >
-            <Tab 
-              icon={<DirectionsRunIcon fontSize="small" />} 
-              iconPosition="start" 
-              label="Activity" 
-              value="activity" 
-              sx={{ color: dataType === 'activity' ? healthData.activity.color : 'inherit' }}
-            />
-            <Tab 
-              icon={<FavoriteIcon fontSize="small" />} 
-              iconPosition="start" 
-              label="Heart Rate" 
-              value="heartRate" 
-              sx={{ color: dataType === 'heartRate' ? healthData.heartRate.color : 'inherit' }}
-            />
-            <Tab 
-              icon={<BedtimeIcon fontSize="small" />} 
-              iconPosition="start" 
-              label="Sleep" 
-              value="sleep" 
-              sx={{ color: dataType === 'sleep' ? healthData.sleep.color : 'inherit' }}
-            />
-            <Tab 
-              icon={<MonitorWeightIcon fontSize="small" />} 
-              iconPosition="start" 
-              label="Weight" 
-              value="weight" 
-              sx={{ color: dataType === 'weight' ? healthData.weight.color : 'inherit' }}
-            />
-            <Tab 
-              icon={<RestaurantIcon fontSize="small" />} 
-              iconPosition="start" 
-              label="Nutrition" 
-              value="nutrition" 
-              sx={{ color: dataType === 'nutrition' ? healthData.nutrition.color : 'inherit' }}
-            />
-          </Tabs>
+          <Divider />
           
-          <Grid container spacing={3}>
-            {/* Chart section */}
-            <Grid item xs={12} md={8}>
-              <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: currentColor }}>
-                    {dataType === 'activity' && 'Daily Steps'}
-                    {dataType === 'heartRate' && 'Resting Heart Rate'}
-                    {dataType === 'sleep' && 'Sleep Duration'}
-                    {dataType === 'weight' && 'Weight Tracking'}
-                    {dataType === 'nutrition' && 'Calorie Intake'}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Goal: {currentGoal} {currentUnit}
-                  </Typography>
-                </Box>
-                
-                <Chart 
-                  type={dataType} 
-                  data={Array.isArray(currentData) 
-                    ? currentData.map((value: number) => value * 90 / Math.max(...currentData))
-                    : []} 
-                  color={currentColor} 
-                />
-                
-                <Box sx={{ 
-                  mt: 3, 
-                  display: 'flex', 
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-end'
-                }}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Average
+          <Box sx={{ p: 3 }}>
+            <Tabs
+              value={dataType}
+              onChange={handleDataTypeChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{
+                mb: 3,
+                '& .MuiTab-root': {
+                  textTransform: 'none',
+                  minWidth: 'auto',
+                  px: 2,
+                  fontSize: '0.875rem',
+                }
+              }}
+            >
+              <Tab 
+                icon={<DirectionsRunIcon fontSize="small" />} 
+                iconPosition="start" 
+                label="Activity" 
+                value="activity" 
+                sx={{ color: dataType === 'activity' ? healthData.activity.color : 'inherit' }}
+              />
+              <Tab 
+                icon={<FavoriteIcon fontSize="small" />} 
+                iconPosition="start" 
+                label="Heart Rate" 
+                value="heartRate" 
+                sx={{ color: dataType === 'heartRate' ? healthData.heartRate.color : 'inherit' }}
+              />
+              <Tab 
+                icon={<BedtimeIcon fontSize="small" />} 
+                iconPosition="start" 
+                label="Sleep" 
+                value="sleep" 
+                sx={{ color: dataType === 'sleep' ? healthData.sleep.color : 'inherit' }}
+              />
+              <Tab 
+                icon={<MonitorWeightIcon fontSize="small" />} 
+                iconPosition="start" 
+                label="Weight" 
+                value="weight" 
+                sx={{ color: dataType === 'weight' ? healthData.weight.color : 'inherit' }}
+              />
+              <Tab 
+                icon={<RestaurantIcon fontSize="small" />} 
+                iconPosition="start" 
+                label="Nutrition" 
+                value="nutrition" 
+                sx={{ color: dataType === 'nutrition' ? healthData.nutrition.color : 'inherit' }}
+              />
+            </Tabs>
+            
+            <Grid container spacing={3}>
+              {/* Chart section */}
+              <Grid item xs={12} md={8}>
+                <Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: currentColor }}>
+                      {dataType === 'activity' && 'Daily Steps'}
+                      {dataType === 'heartRate' && 'Resting Heart Rate'}
+                      {dataType === 'sleep' && 'Sleep Duration'}
+                      {dataType === 'weight' && 'Weight Tracking'}
+                      {dataType === 'nutrition' && 'Calorie Intake'}
                     </Typography>
-                    <Typography variant="h4" sx={{ fontWeight: 'bold', color: currentColor, lineHeight: 1.2 }}>
-                      {average}
-                      <Typography component="span" variant="body2" sx={{ ml: 0.5 }}>
-                        {currentUnit}
-                      </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Goal: {currentGoal} {currentUnit}
                     </Typography>
                   </Box>
                   
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Box sx={{ 
-                      display: 'inline-flex', 
-                      alignItems: 'center',
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 1,
-                      backgroundColor: percentChange >= 0 ? 'rgba(102, 187, 106, 0.1)' : 'rgba(239, 83, 80, 0.1)',
-                      color: percentChange >= 0 ? 'success.main' : 'error.main',
-                    }}>
-                      <Typography variant="body2" fontWeight="medium">
-                        {percentChange >= 0 ? '+' : ''}{percentChange}% from {timeRange === 'daily' ? 'yesterday' : timeRange === 'week' ? 'last week' : 'last month'}
+                  <Chart 
+                    type={dataType} 
+                    data={Array.isArray(currentData) 
+                      ? (currentData as number[]).map((value: number) => value * 90 / Math.max(...(currentData as number[])))
+                      : []} 
+                    color={currentColor} 
+                  />
+                  
+                  <Box sx={{ 
+                    mt: 3, 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end'
+                  }}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Average
                       </Typography>
+                      <Typography variant="h4" sx={{ fontWeight: 'bold', color: currentColor, lineHeight: 1.2 }}>
+                        {average}
+                        <Typography component="span" variant="body2" sx={{ ml: 0.5 }}>
+                          {currentUnit}
+                        </Typography>
+                      </Typography>
+                    </Box>
+                    
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Box sx={{ 
+                        display: 'inline-flex', 
+                        alignItems: 'center',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: 1,
+                        backgroundColor: percentChange >= 0 ? 'rgba(102, 187, 106, 0.1)' : 'rgba(239, 83, 80, 0.1)',
+                        color: percentChange >= 0 ? 'success.main' : 'error.main',
+                      }}>
+                        <Typography variant="body2" fontWeight="medium">
+                          {percentChange >= 0 ? '+' : ''}{percentChange}% from {timeRange === 'daily' ? 'yesterday' : timeRange === 'week' ? 'last week' : 'last month'}
+                        </Typography>
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
-              </Box>
-            </Grid>
-            
-            {/* Insights section */}
-            <Grid item xs={12} md={4}>
-              <Paper 
-                elevation={0} 
-                sx={{ 
-                  p: 2, 
-                  height: '100%',
-                  backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-                  borderRadius: 2,
-                  border: '1px solid',
-                  borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <InfoOutlinedIcon fontSize="small" sx={{ mr: 1, color: currentColor }} />
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    AI Insights
-                  </Typography>
-                </Box>
-                
-                <Divider sx={{ mb: 2 }} />
-                
-                {currentInsights.map((insight, index) => (
-                  <Box 
-                    key={index} 
-                    sx={{ 
-                      mb: 1.5, 
-                      p: 1.5,
-                      borderRadius: 1,
-                      backgroundColor: `${currentColor}10`,
-                      border: '1px solid',
-                      borderColor: `${currentColor}30`
-                    }}
-                  >
-                    <Typography variant="body2">
-                      {insight}
-                    </Typography>
-                  </Box>
-                ))}
-                
-                <Button 
-                  variant="outlined" 
-                  size="small" 
-                  fullWidth 
+              </Grid>
+              
+              {/* Insights section */}
+              <Grid item xs={12} md={4}>
+                <Paper 
+                  elevation={0} 
                   sx={{ 
-                    mt: 1,
-                    borderColor: currentColor,
-                    color: currentColor,
-                    '&:hover': {
-                      borderColor: currentColor,
-                      backgroundColor: `${currentColor}10`
-                    },
-                    textTransform: 'none'
+                    p: 2, 
+                    height: '100%',
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
                   }}
                 >
-                  View Detailed Analysis
-                </Button>
-              </Paper>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <InfoOutlinedIcon fontSize="small" sx={{ mr: 1, color: currentColor }} />
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      AI Insights
+                    </Typography>
+                  </Box>
+                  
+                  <Divider sx={{ mb: 2 }} />
+                  
+                  {currentInsights.map((insight, index) => (
+                    <Box 
+                      key={index} 
+                      sx={{ 
+                        mb: 1.5, 
+                        p: 1.5,
+                        borderRadius: 1,
+                        backgroundColor: `${currentColor}10`,
+                        border: '1px solid',
+                        borderColor: `${currentColor}30`
+                      }}
+                    >
+                      <Typography variant="body2">
+                        {insight}
+                      </Typography>
+                    </Box>
+                  ))}
+                  
+                  <Button 
+                    variant="outlined" 
+                    size="small" 
+                    fullWidth 
+                    sx={{ 
+                      mt: 1,
+                      borderColor: currentColor,
+                      color: currentColor,
+                      '&:hover': {
+                        borderColor: currentColor,
+                        backgroundColor: `${currentColor}10`
+                      },
+                      textTransform: 'none'
+                    }}
+                  >
+                    View Detailed Analysis
+                  </Button>
+                </Paper>
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
-      </CardContent>
-    </Card>
+          </Box>
+        </CardContent>
+      </Card>
+    </>
   );
 };
 

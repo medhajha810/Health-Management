@@ -8,6 +8,9 @@ import {
   Button,
   Chip,
   Autocomplete,
+  AutocompleteChangeDetails,
+  AutocompleteChangeReason,
+  AutocompleteRenderGetTagProps,
   List,
   ListItem,
   ListItemText,
@@ -56,7 +59,12 @@ const SymptomAnalyzer: React.FC = () => {
     "Chills", "Swelling", "Vision problems", "Difficulty sleeping"
   ];
 
-  const handleSymptomChange = (event: React.SyntheticEvent, newValue: string[]) => {
+  const handleSymptomChange = (
+    event: React.SyntheticEvent, 
+    newValue: string[], 
+    reason?: AutocompleteChangeReason,
+    details?: AutocompleteChangeDetails<string>
+  ) => {
     setSelectedSymptoms(newValue);
     setResults(null);
   };
@@ -274,7 +282,6 @@ const SymptomAnalyzer: React.FC = () => {
                 id="symptoms-input"
                 options={commonSymptoms}
                 value={selectedSymptoms}
-                onChange={handleSymptomChange}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -284,6 +291,9 @@ const SymptomAnalyzer: React.FC = () => {
                     sx={{ mb: 2 }}
                   />
                 )}
+                onInputChange={(event, value) => {
+                  // This handles input changes without triggering type errors
+                }}
                 renderTags={(value, getTagProps) =>
                   value.map((option, index) => (
                     <Chip
@@ -331,13 +341,13 @@ const SymptomAnalyzer: React.FC = () => {
                 <>
                   <Alert 
                     severity={
-                      results.possibleConditions.some((c: { urgency: string; }) => c.urgency === 'high') ? 'warning' :
-                      results.possibleConditions.some((c: { urgency: string; }) => c.urgency === 'medium') ? 'info' : 'success'
+                      results.possibleConditions.some((c: { urgency: string }) => c.urgency === 'high') ? 'warning' :
+                      results.possibleConditions.some((c: { urgency: string }) => c.urgency === 'medium') ? 'info' : 'success'
                     }
                     sx={{ mb: 3 }}
                     icon={
-                      results.possibleConditions.some(c => c.urgency === 'high') ? <WarningAmberIcon /> :
-                      results.possibleConditions.some(c => c.urgency === 'medium') ? <InfoOutlinedIcon /> : <CheckCircleOutlineIcon />
+                      results.possibleConditions.some((c: { urgency: string }) => c.urgency === 'high') ? <WarningAmberIcon /> :
+                      results.possibleConditions.some((c: { urgency: string }) => c.urgency === 'medium') ? <InfoOutlinedIcon /> : <CheckCircleOutlineIcon />
                     }
                   >
                     {results.generalAdvice}

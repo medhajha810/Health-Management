@@ -81,14 +81,13 @@ const SimpleNotifications: React.FC = () => {
         const appointments = JSON.parse(savedAppointments);
         if (Array.isArray(appointments) && appointments.length > 0) {
           // Convert appointments to notifications if they don't already exist
-          const appointmentNotifications = appointments.map(appointment => ({
-            id: `appt-notification-${appointment.id}`,
-            type: 'appointment',
-            title: 'Appointment Information',
-            message: `You have a ${appointment.type} appointment with ${appointment.doctorName} on ${new Date(appointment.date).toLocaleString()}.`,
+          const appointmentNotifications: Notification[] = appointments.map(appt => ({
+            id: `appt-${appt.id}`,
+            title: 'Upcoming Appointment',
+            message: `You have a ${appt.type} appointment with Dr. ${appt.doctor} on ${appt.date}`,
             date: new Date().toISOString(),
             isRead: false,
-            priority: 'medium',
+            priority: 'medium' as 'high' | 'medium' | 'low',
             action: {
               label: 'View Appointment',
               link: '/telehealth'
