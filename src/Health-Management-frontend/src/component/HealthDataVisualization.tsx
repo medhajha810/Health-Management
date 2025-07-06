@@ -65,15 +65,15 @@ const Chart = ({ type, data, color }: { type: string; data: any[]; color: string
       >
         <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
           <path
-            d={`M0,${100 - data[0]} ${data.map((value, index) => `L${index * (100 / (data.length - 1))},${100 - value}`).join(' ')}`}
+            d={`M0,${100 - (Array.isArray(data) && data.length > 0 ? data[0] : 0)} ${(Array.isArray(data) ? data : []).map((value, index) => `L${index * (100 / ((Array.isArray(data) ? data.length : 1) - 1))},${100 - value}`).join(' ')}`}
             fill="none"
             stroke={color}
             strokeWidth="3"
           />
-          {data.map((value, index) => (
+          {(Array.isArray(data) ? data : []).map((value, index) => (
             <circle
               key={index}
-              cx={index * (100 / (data.length - 1))}
+              cx={index * (100 / ((Array.isArray(data) ? data.length : 1) - 1))}
               cy={100 - value}
               r="2"
               fill={muiTheme.palette.background.paper}
@@ -418,7 +418,7 @@ const HealthDataVisualization: React.FC = () => {
                   
                   <Divider sx={{ mb: 2 }} />
                   
-                  {currentInsights.map((insight, index) => (
+                  {(Array.isArray(currentInsights) ? currentInsights : []).map((insight, index) => (
                     <Box 
                       key={index} 
                       sx={{ 

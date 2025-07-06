@@ -5,9 +5,15 @@
       "package": "healthchain_backend",
       "type": "rust"
     },
+    "health_management_backend": {
+      "candid": "src/Health-Management-backend/Health-Management-backend.did",
+      "package": "health_management_backend",
+      "type": "rust"
+    },
     "Health-Management-frontend": {
       "dependencies": [
-        "healthchain_backend"
+        "healthchain_backend",
+        "health_management_backend"
       ],
       "frontend": {
         "entrypoint": "src/Health-Management-frontend/dist/index.html"

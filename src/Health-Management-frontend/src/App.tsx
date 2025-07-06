@@ -28,6 +28,8 @@ import TeleHealth from './component/TeleHealth';
 import HealthAnalytics from './component/HealthAnalytics';
 import HealthDataVisualization from './component/HealthDataVisualization';
 import { applyLoaderFix } from './utils/loaderFix';
+import Leaderboard from './component/Leaderboard';
+import Auth from './component/Auth';
 
 // Create a notification context directly in App.tsx to avoid circular dependencies
 export interface NotificationContextType {
@@ -367,6 +369,7 @@ function AppContent() {
             <Route path="/telehealth" element={<TeleHealth />} />
             <Route path="/analytics" element={<HealthAnalytics />} />
             <Route path="/fitness" element={<HealthDataVisualization />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Box>
@@ -375,21 +378,12 @@ function AppContent() {
   );
 }
 
-function App() {
-  // Force hide any loader that might be present
-  useEffect(() => {
-    // Simple direct approach to remove the loader
-    const loader = document.getElementById("loading");
-    if (loader) {
-      loader.style.display = "none";
-    }
-    
-    // Make sure body is visible and scrollable
-    document.body.style.display = "block";
-    document.body.style.overflow = "auto";
+const App = () => {
+  const [authed, setAuthed] = React.useState(!!localStorage.getItem('token'));
+  React.useEffect(() => {
+    setAuthed(!!localStorage.getItem('token'));
   }, []);
-
-  return (
+  return authed ? (
     <CustomThemeProvider>
       <UserProvider>
         <NotificationProvider>
@@ -414,7 +408,9 @@ function App() {
         </NotificationProvider>
       </UserProvider>
     </CustomThemeProvider>
+  ) : (
+    <Auth onAuth={() => setAuthed(true)} />
   );
-}
+};
 
 export default App; 

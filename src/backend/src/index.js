@@ -1,9 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -11,30 +13,25 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/health-management')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// In-memory data stores
+const users = [];
+const healthRecords = [];
+const challengeCompletions = [];
+let userIdCounter = 1;
+let recordIdCounter = 1;
+let challengeCompletionIdCounter = 1;
 
-// Health Record Schema
-const healthRecordSchema = new mongoose.Schema({
-  date: { type: Date, default: Date.now },
-  type: String,
-  description: String,
-  doctor: String,
-  patient: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+const PDF_DIR = path.join(process.cwd(), 'pdfs');
+if (!fs.existsSync(PDF_DIR)) fs.mkdirSync(PDF_DIR);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, PDF_DIR),
+  filename: (req, file, cb) => {
+    const userId = req.user?.userId || 'unknown';
+    const timestamp = Date.now();
+    cb(null, `user_${userId}_${timestamp}.pdf`);
+  }
 });
-
-const HealthRecord = mongoose.model('HealthRecord', healthRecordSchema);
-
-// User Schema
-const userSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  name: String
-});
-
-const User = mongoose.model('User', userSchema);
+const upload = multer({ storage });
 
 // Authentication middleware
 const authenticateToken = (req, res, next) => {
@@ -59,15 +56,17 @@ const authenticateToken = (req, res, next) => {
 app.post('/api/register', async (req, res) => {
   try {
     const { email, password, name } = req.body;
+    if (users.find(u => u.email === email)) {
+      return res.status(400).json({ error: 'Email already registered' });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
-    
-    const user = new User({
+    const user = {
+      id: userIdCounter++,
       email,
       password: hashedPassword,
       name
-    });
-    
-    await user.save();
+    };
+    users.push(user);
     res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -78,24 +77,20 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    
+    const user = users.find(u => u.email === email);
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user.id, email: user.email },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '24h' }
     );
-    
-    res.json({ token, user: { id: user._id, email: user.email, name: user.name } });
+    res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -105,14 +100,15 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/records', authenticateToken, async (req, res) => {
   try {
     const { type, description, doctor } = req.body;
-    const record = new HealthRecord({
+    const record = {
+      id: recordIdCounter++,
+      date: new Date(),
       type,
       description,
       doctor,
       patient: req.user.userId
-    });
-    
-    await record.save();
+    };
+    healthRecords.push(record);
     res.status(201).json(record);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -121,7 +117,7 @@ app.post('/api/records', authenticateToken, async (req, res) => {
 
 app.get('/api/records', authenticateToken, async (req, res) => {
   try {
-    const records = await HealthRecord.find({ patient: req.user.userId });
+    const records = healthRecords.filter(r => r.patient === req.user.userId);
     res.json(records);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -130,15 +126,10 @@ app.get('/api/records', authenticateToken, async (req, res) => {
 
 app.get('/api/records/:id', authenticateToken, async (req, res) => {
   try {
-    const record = await HealthRecord.findOne({
-      _id: req.params.id,
-      patient: req.user.userId
-    });
-    
+    const record = healthRecords.find(r => r.id == req.params.id && r.patient === req.user.userId);
     if (!record) {
       return res.status(404).json({ error: 'Record not found' });
     }
-    
     res.json(record);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -148,16 +139,13 @@ app.get('/api/records/:id', authenticateToken, async (req, res) => {
 app.put('/api/records/:id', authenticateToken, async (req, res) => {
   try {
     const { type, description, doctor } = req.body;
-    const record = await HealthRecord.findOneAndUpdate(
-      { _id: req.params.id, patient: req.user.userId },
-      { type, description, doctor },
-      { new: true }
-    );
-    
+    const record = healthRecords.find(r => r.id == req.params.id && r.patient === req.user.userId);
     if (!record) {
       return res.status(404).json({ error: 'Record not found' });
     }
-    
+    record.type = type;
+    record.description = description;
+    record.doctor = doctor;
     res.json(record);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -166,19 +154,81 @@ app.put('/api/records/:id', authenticateToken, async (req, res) => {
 
 app.delete('/api/records/:id', authenticateToken, async (req, res) => {
   try {
-    const record = await HealthRecord.findOneAndDelete({
-      _id: req.params.id,
-      patient: req.user.userId
-    });
-    
-    if (!record) {
+    const idx = healthRecords.findIndex(r => r.id == req.params.id && r.patient === req.user.userId);
+    if (idx === -1) {
       return res.status(404).json({ error: 'Record not found' });
     }
-    
+    healthRecords.splice(idx, 1);
     res.json({ message: 'Record deleted successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+});
+
+// Challenge Completion routes
+app.post('/api/challenges/complete', authenticateToken, async (req, res) => {
+  try {
+    const { challengeId } = req.body;
+    const completion = {
+      id: challengeCompletionIdCounter++,
+      user: req.user.userId,
+      challengeId,
+      completedAt: new Date()
+    };
+    challengeCompletions.push(completion);
+    res.status(201).json(completion);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/api/challenges', authenticateToken, async (req, res) => {
+  try {
+    const completions = challengeCompletions.filter(c => c.user === req.user.userId);
+    res.json(completions);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/api/challenges/leaderboard', async (req, res) => {
+  try {
+    // Count completions per user
+    const leaderboardMap = {};
+    challengeCompletions.forEach(c => {
+      const user = users.find(u => u.id === c.user);
+      if (!user) return;
+      if (!leaderboardMap[user.name]) leaderboardMap[user.name] = 0;
+      leaderboardMap[user.name]++;
+    });
+    const leaderboard = Object.entries(leaderboardMap).map(([username, count]) => ({ username, count })).sort((a, b) => b.count - a.count);
+    res.json(leaderboard);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Upload PDF
+app.post('/api/records/upload-pdf', authenticateToken, upload.single('pdf'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  res.json({ message: 'PDF uploaded successfully', filename: req.file.filename });
+});
+
+// List user's PDFs
+app.get('/api/records/list-pdfs', authenticateToken, (req, res) => {
+  const userId = req.user.userId;
+  const files = fs.readdirSync(PDF_DIR).filter(f => f.startsWith(`user_${userId}_`));
+  res.json(files);
+});
+
+// Download a user's PDF
+app.get('/api/records/download-pdf/:filename', authenticateToken, (req, res) => {
+  const userId = req.user.userId;
+  const { filename } = req.params;
+  if (!filename.startsWith(`user_${userId}_`)) return res.status(403).json({ error: 'Forbidden' });
+  const filePath = path.join(PDF_DIR, filename);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File not found' });
+  res.download(filePath);
 });
 
 const PORT = process.env.PORT || 5000;

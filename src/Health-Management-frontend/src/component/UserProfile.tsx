@@ -47,6 +47,11 @@ import LinkIcon from '@mui/icons-material/Link';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import PersonIcon from '@mui/icons-material/Person';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import FlowAuth from './FlowAuth';
+import * as fcl from '@onflow/fcl';
+import getRecordsScript from '../flow/get_records.cdc?raw';
+import setupAccountScript from '../flow/setup_account.cdc?raw';
+import mintRecordScript from '../flow/mint_record.cdc?raw';
 
 // Rename Grid to avoid deprecation warnings throughout the code
 const Grid = MuiGrid;
@@ -96,6 +101,13 @@ const UserProfile: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const newProfileFileInputRef = useRef<HTMLInputElement>(null);
   const [newProfileAvatar, setNewProfileAvatar] = useState<string>('');
+  const [flowAddress, setFlowAddress] = useState<string | null>(null);
+  const [flowRecords, setFlowRecords] = useState<{id: string, dataRef: string}[]>([]);
+  const [minting, setMinting] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const [mintDataRef, setMintDataRef] = useState('');
+  const [setupInProgress, setSetupInProgress] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if the current profile has a linked ABHA ID
@@ -104,7 +116,35 @@ const UserProfile: React.FC = () => {
     } else {
       setAbhaLinked(false);
     }
+    // Load Flow address from profile or localStorage
+    if (currentProfile?.flowAddress) {
+      setFlowAddress(currentProfile.flowAddress);
+    } else {
+      const stored = localStorage.getItem('flowAddress');
+      setFlowAddress(stored || null);
+    }
   }, [currentProfile]);
+
+  useEffect(() => {
+    const unsubscribe = fcl.currentUser().subscribe((user: any) => {
+      if (user && user.addr) {
+        setFlowAddress(user.addr);
+        localStorage.setItem('flowAddress', user.addr);
+        if (currentProfile && currentProfile.flowAddress !== user.addr) {
+          updateProfile(currentProfile.id, { ...currentProfile, flowAddress: user.addr });
+        }
+      } else {
+        setFlowAddress(null);
+        localStorage.removeItem('flowAddress');
+        if (currentProfile && currentProfile.flowAddress) {
+          updateProfile(currentProfile.id, { ...currentProfile, flowAddress: '' });
+        }
+      }
+    });
+    return () => unsubscribe();
+    // Only run once on mount
+    // eslint-disable-next-line
+  }, []);
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditedProfile({
@@ -401,6 +441,15 @@ const UserProfile: React.FC = () => {
   
   const handleUploadClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleUnlinkFlow = () => {
+    fcl.unauthenticate();
+    setFlowAddress(null);
+    if (currentProfile) {
+      updateProfile(currentProfile.id, { ...currentProfile, flowAddress: '' });
+    }
+    localStorage.removeItem('flowAddress');
   };
 
   const ABHADetailsCard = () => {
@@ -848,6 +897,73 @@ const UserProfile: React.FC = () => {
     );
   };
 
+  const handleSetupFlowAccount = async () => {
+    setSetupInProgress(true);
+    try {
+      await fcl.mutate({
+        cadence: setupAccountScript,
+        proposer: fcl.currentUser,
+        payer: fcl.currentUser,
+        authorizations: [fcl.currentUser().authorization],
+        limit: 50
+      });
+      alert('Flow account setup complete!');
+    } catch (e) {
+      alert('Error setting up Flow account: ' + e);
+    }
+    setSetupInProgress(false);
+  };
+
+  const handleMintFlowRecord = async () => {
+    setMinting(true);
+    try {
+      await fcl.mutate({
+        cadence: mintRecordScript,
+        args: (arg: any, t: any) => [arg(mintDataRef, t.String)],
+        proposer: fcl.currentUser,
+        payer: fcl.currentUser,
+        authorizations: [fcl.currentUser().authorization],
+        limit: 100
+      });
+      alert('Health record minted on Flow!');
+      setMintDataRef('');
+    } catch (e) {
+      alert('Error minting record: ' + e);
+    }
+    setMinting(false);
+  };
+
+  const handleFetchFlowRecords = async () => {
+    setFetching(true);
+    try {
+      const user = await fcl.currentUser().snapshot();
+      const result = await fcl.query({
+        cadence: getRecordsScript,
+        args: (arg: any, t: any) => [arg(user.addr || '', t.Address)],
+      });
+      // result is an array of {id: dataRef}
+      setFlowRecords(result.map((obj: any) => {
+        const id = Object.keys(obj)[0];
+        return { id, dataRef: obj[id] };
+      }));
+    } catch (e) {
+      alert('Error fetching Flow records: ' + e);
+    }
+    setFetching(false);
+  };
+
+  const fetchRecords = async () => {
+    try {
+      // ...existing fetch logic...
+    } catch (error: any) {
+      if (error?.response?.status === 400 || error?.response?.status === 401) {
+        setApiError('Session expired or unauthorized. Please log in again.');
+      } else {
+        setApiError('Failed to load data. Please try again later.');
+      }
+    }
+  };
+
   if (!currentProfile) {
     return (
       <Container maxWidth="md">
@@ -1073,6 +1189,107 @@ const UserProfile: React.FC = () => {
                   </Button>
                 </Box>
               )}
+            </Box>
+            
+            <Divider sx={{ my: 2 }} />
+
+            {/* Linked Accounts Section */}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+                Linked Accounts
+              </Typography>
+              <Grid container spacing={2}>
+                {/* ABHA Account */}
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <img src="/src/Health-Management-frontend/public/nurse.svg" alt="ABHA" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                    <Box>
+                      <Typography variant="body2" fontWeight="medium">ABHA ID</Typography>
+                      {currentProfile?.abhaId && currentProfile?.abhaCardLinked ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <CheckCircleOutlineIcon color="success" fontSize="small" />
+                          <Typography variant="body2">Linked</Typography>
+                          <Button size="small" variant="outlined" color="primary" onClick={handleLinkAbha} sx={{ ml: 1 }}>
+                            Update
+                          </Button>
+                        </Box>
+                      ) : (
+                        <Button size="small" variant="contained" color="primary" onClick={handleLinkAbha}>
+                          Link ABHA
+                        </Button>
+                      )}
+                    </Box>
+                  </Box>
+                </Grid>
+                {/* Flow Account */}
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <img src="https://cryptologos.cc/logos/flow-flow-logo.png?v=026" alt="Flow" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                      <Box>
+                        <Typography variant="body2" fontWeight="medium">Flow Wallet</Typography>
+                        {flowAddress ? (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'success.main' }}>{flowAddress}</Typography>
+                            <Button size="small" variant="outlined" color="secondary" onClick={handleUnlinkFlow} sx={{ ml: 1 }}>
+                              Unlink
+                            </Button>
+                          </Box>
+                        ) : (
+                          <FlowAuth />
+                        )}
+                        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                          {flowAddress ? 'Your Flow wallet is linked' : 'No Flow wallet linked'}
+                          <br />
+                          {flowAddress && 'Keep your Flow wallet recovery phrase safe for account recovery.'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    {/* Flow Integration Actions */}
+                    {flowAddress && (
+                      <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <Button variant="outlined" color="primary" onClick={handleSetupFlowAccount} disabled={setupInProgress}>
+                          {setupInProgress ? 'Setting up...' : 'Setup Flow Account'}
+                        </Button>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <TextField size="small" label="DataRef (IPFS/URL)" value={mintDataRef} onChange={e => setMintDataRef(e.target.value)} />
+                          <Button variant="contained" color="primary" onClick={handleMintFlowRecord} disabled={minting || !mintDataRef}>
+                            {minting ? 'Minting...' : 'Mint Health Record'}
+                          </Button>
+                        </Box>
+                        <Button variant="outlined" color="secondary" onClick={handleFetchFlowRecords} disabled={fetching}>
+                          {fetching ? 'Fetching...' : 'View Flow Records'}
+                        </Button>
+                        {flowRecords.length > 0 && (
+                          <Box sx={{ mt: 1 }}>
+                            <Typography variant="subtitle2">Flow Health Records:</Typography>
+                            <ul>
+                              {flowRecords.map(r => (
+                                <li key={r.id}><b>ID:</b> {r.id} <b>DataRef:</b> {r.dataRef}</li>
+                              ))}
+                            </ul>
+                          </Box>
+                        )}
+                      </Box>
+                    )}
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+            
+            <Divider sx={{ my: 2 }} />
+
+            {/* Account Recovery Section */}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+                Account Recovery
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Secure your account by setting up recovery options. You can add a recovery phrase or trusted device to help regain access if you lose your login credentials.
+              </Typography>
+              <Button variant="outlined" color="primary" disabled>
+                Show Recovery Options (Coming Soon)
+              </Button>
             </Box>
             
             <Divider sx={{ my: 2 }} />
@@ -1718,10 +1935,8 @@ const UserProfile: React.FC = () => {
               sx={{ 
                 color: 'text.primary',
                 '&:hover': {
-                  bgcolor: 'rgba(0,0,0,0.05)',
-                  transform: 'translateY(-2px)'
-                },
-                transition: 'transform 0.2s ease'
+                  bgcolor: 'rgba(0,0,0,0.05)'
+                }
               }}
             >
               Cancel
@@ -2113,6 +2328,13 @@ const UserProfile: React.FC = () => {
         accept="image/*"
         onChange={handleNewProfileFileInputChange}
       />
+
+      {apiError && (
+        <Box sx={{ my: 2 }}>
+          <Typography color="error" variant="body1">{apiError}</Typography>
+          <Button variant="contained" color="primary" onClick={() => navigate('/login')}>Go to Login</Button>
+        </Box>
+      )}
     </Container>
   );
 };

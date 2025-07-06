@@ -32,28 +32,6 @@ const SimpleNotifications: React.FC = () => {
   const notificationContext = useContext(NotificationContext);
   const navigate = useNavigate();
   
-  // Default example notifications only shown if no other notifications exist
-  const defaultNotifications: Notification[] = [
-    {
-      id: '1',
-      title: 'Welcome to Notifications',
-      message: 'This is a sample notification to demonstrate the interface.',
-      date: new Date().toISOString(),
-      isRead: false,
-      priority: 'medium',
-      type: 'system'
-    },
-    {
-      id: '2',
-      title: 'System Update',
-      message: 'The system has been updated with new features.',
-      date: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-      isRead: true,
-      priority: 'low',
-      type: 'system'
-    }
-  ];
-  
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   // Load notifications from localStorage on component mount
@@ -112,7 +90,7 @@ const SimpleNotifications: React.FC = () => {
     
     // Fall back to default notifications if none loaded
     if (!hasLoadedNotifications) {
-      setNotifications(defaultNotifications);
+      setNotifications([]);
     }
   }, []);
 

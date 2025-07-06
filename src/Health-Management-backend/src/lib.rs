@@ -4,7 +4,8 @@ use ic_cdk_macros::*;
 use serde::Serialize;
 use std::collections::HashMap;
 use ic_cdk::storage;
-use uuid;
+use ic_cdk::api::management_canister::main::raw_rand;
+use uuid::Uuid;
 
 #[derive(CandidType, Serialize, Deserialize, Clone)]
 pub enum AccessLevel {
@@ -40,10 +41,16 @@ fn init() {
     });
 }
 
+async fn generate_uuid() -> String {
+    let (random_bytes,) = raw_rand().await.expect("Failed to get randomness");
+    let uuid = Uuid::from_slice(&random_bytes[..16]).expect("Failed to create UUID");
+    uuid.to_string()
+}
+
 #[update]
-fn create_record(metadata: String, data: String) -> String {
+async fn create_record(metadata: String, data: String) -> String {
     let caller = ic_cdk::caller();
-    let id = uuid::Uuid::new_v4().to_string();
+    let id = generate_uuid().await;
     let record = MedicalRecord {
         id: id.clone(),
         patient: caller,

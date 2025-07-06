@@ -27,6 +27,13 @@ import PeopleIcon from '@mui/icons-material/People';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
 import StorageIcon from '@mui/icons-material/Storage';
 import Dashboard from './Dashboard';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import ChatIcon from '@mui/icons-material/Chat';
+import ScienceIcon from '@mui/icons-material/Science';
 
 const AboutLanding: React.FC = () => {
   const [showDashboard, setShowDashboard] = useState(false);
@@ -1495,27 +1502,128 @@ const AboutLanding: React.FC = () => {
             </motion.div>
           </Container>
 
-          {/* Footer */}
-          <Box 
-            component="footer" 
-            sx={{ 
-              py: 3, 
-              textAlign: 'center',
-              backgroundColor: darkMode ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(10px)',
-              position: 'relative',
-              zIndex: 1,
-              mt: 4
-            }}
-          >
-            <Container maxWidth="lg">
-              <Typography 
-                variant="body2" 
-                color={darkMode ? 'rgba(255,255,255,0.7)' : 'text.secondary'}
-              >
-                © {new Date().getFullYear()} Health Management System. All rights reserved.
-              </Typography>
-            </Container>
+          {/* After the main features/architecture section, add: */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 4 }}>
+            <img src="/images/flow-logo.png" alt="Flow" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+            <Typography variant="subtitle2" color="primary" fontWeight="bold">
+              Powered by Flow Blockchain
+            </Typography>
+          </Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 4 }}>
+            Your health records and account links are secured using Flow blockchain technology. Please keep your Flow wallet recovery phrase safe to ensure you can always recover your account.
+          </Typography>
+
+          {/* Add after the main intro/about section: */}
+          <Box sx={{ mt: 8, mb: 8 }}>
+            <Typography variant="h4" fontWeight="bold" gutterBottom color="primary">
+              Flow Blockchain Integration
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4 }}>
+              Our platform leverages the Flow blockchain to provide secure, transparent, and user-owned health record management. Here's what you can do with Flow:
+            </Typography>
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#00bcd4', mb: 2 }}><AccountBalanceWalletIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">Connect Flow Wallet</Typography>
+                  <Typography variant="body2" align="center">Securely connect your Flow wallet to access blockchain features.</Typography>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#2196f3', mb: 2 }}><MedicalServicesIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">Setup Flow Account</Typography>
+                  <Typography variant="body2" align="center">Initialize your account to mint and manage health records on Flow.</Typography>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#ffb300', mb: 2 }}><AddCircleIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">Mint Health Record</Typography>
+                  <Typography variant="body2" align="center">Turn your health record into a secure NFT for verifiable ownership.</Typography>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#1976d2', mb: 2 }}><ListAltIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">View Flow Records</Typography>
+                  <Typography variant="body2" align="center">Browse all your health records stored on the Flow blockchain.</Typography>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#8e24aa', mb: 2 }}><EmojiEventsIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">Flow Leaderboard</Typography>
+                  <Typography variant="body2" align="center">See your ranking and compete with others based on blockchain achievements.</Typography>
+                </Card>
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Add after the Flow Blockchain Integration section: */}
+          <Box sx={{ mt: 8, mb: 8 }}>
+            <Typography variant="h4" fontWeight="bold" gutterBottom color="primary">
+              Breakthrough Flow Features
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4 }}>
+              Our app is built for the next billion users—leveraging Flow's unique capabilities for mass adoption, composability, and killer UX.
+            </Typography>
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#00bcd4', mb: 2 }}><ChatIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">AI Health Agent</Typography>
+                  <Typography variant="body2" align="center">
+                    Your personal AI assistant manages your health, schedules, and even helps recover your account using Flow's Account Linking.
+                  </Typography>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#ffb300', mb: 2 }}><AddCircleIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">NFT Health Records</Typography>
+                  <Typography variant="body2" align="center">
+                    Own your health data as NFTs—share, revoke, or monetize with a tap.
+                  </Typography>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#8e24aa', mb: 2 }}><EmojiEventsIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">Flow Leaderboard & Challenges</Typography>
+                  <Typography variant="body2" align="center">
+                    Compete globally, win rewards, and prove your achievements on-chain—powered by Flow's VRF for fairness.
+                  </Typography>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#1976d2', mb: 2 }}><AccountBalanceWalletIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">Walletless Onboarding</Typography>
+                  <Typography variant="body2" align="center">
+                    Start using the app instantly—no wallet required. Upgrade to full control anytime.
+                  </Typography>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#43a047', mb: 2 }}><MedicalServicesIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">Sponsored Transactions</Typography>
+                  <Typography variant="body2" align="center">
+                    Enjoy a seamless, gasless experience—transactions are sponsored or batched for you.
+                  </Typography>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6} lg={4}>
+                <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Avatar sx={{ bgcolor: '#00bcd4', mb: 2 }}><ScienceIcon /></Avatar>
+                  <Typography variant="h6" fontWeight="bold">Composable Health Data</Typography>
+                  <Typography variant="body2" align="center">
+                    Permissionlessly connect your health data to other apps, research, or services—unlocking new value.
+                  </Typography>
+                </Card>
+              </Grid>
+            </Grid>
           </Box>
         </motion.div>
       </Box>

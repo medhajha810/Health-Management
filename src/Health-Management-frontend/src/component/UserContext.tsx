@@ -18,6 +18,7 @@ export interface UserProfile {
   medications: string[];
   abhaId?: string;
   abhaCardLinked?: boolean;
+  flowAddress?: string;
 }
 
 interface UserContextType {

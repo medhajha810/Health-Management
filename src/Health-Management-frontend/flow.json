@@ -1,0 +1,15 @@
+{
+  "emulators": {
+    "default": {
+      "port": 3569,
+      "serviceAccount": "emulator-account"
+    }
+  },
+  "testnet": {
+    "accessNode": "https://rest-testnet.onflow.org",
+    "walletDiscovery": "https://fcl-discovery.onflow.org/testnet/authn"
+  },
+  "contracts": {
+    "HealthRecords": "./contracts/HealthRecords.cdc"
+  }
+} 

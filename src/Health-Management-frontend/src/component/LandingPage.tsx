@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -28,6 +28,14 @@ import DevicesIcon from '@mui/icons-material/Devices';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import HealingIcon from '@mui/icons-material/Healing';
+import FlowAuth from './FlowAuth';
+import AIHealthAgent from './AIHealthAgent';
+import Leaderboard from './Leaderboard';
+import * as fcl from '@onflow/fcl';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 // Helper function to get gradient color based on index and dark mode
 const getGradientColor = (index: number, darkMode: boolean) => {
@@ -99,7 +107,10 @@ const getIcon = (iconName: string, styles: { color: string, fontSize: string | n
 
 const LandingPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
+  const [flowUser, setFlowUser] = useState<any>(null);
   
+  useEffect(() => { fcl.currentUser().subscribe(setFlowUser); }, []);
+
   try {
     const { darkMode } = useTheme();
     const navigate = useNavigate();
@@ -254,6 +265,7 @@ const LandingPage: React.FC = () => {
         ))}
         
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+          <FlowAuth />
           <motion.div
             initial="hidden"
             animate="visible"
@@ -278,22 +290,23 @@ const LandingPage: React.FC = () => {
                 align="center"
                 sx={{ 
                   fontWeight: 'bold',
-                    mb: 1,
-                    color: darkMode ? '#e3f2fd' : '#01579b',
-                    textShadow: darkMode ? '0 2px 10px rgba(33, 150, 243, 0.5)' : '0 2px 10px rgba(3, 169, 244, 0.3)',
-                    position: 'relative',
-                    zIndex: 2,
-                  }}
-                >
-                  <motion.span
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.2 }}
-                    style={{ display: 'block' }}
+                  mb: 1,
+                  color: darkMode ? '#e3f2fd' : '#01579b',
+                  textShadow: darkMode ? '0 2px 10px rgba(33, 150, 243, 0.5)' : '0 2px 10px rgba(3, 169, 244, 0.3)',
+                  position: 'relative',
+                  zIndex: 2,
+                }}
               >
-                Welcome to Health Management System
-                  </motion.span>
+                <motion.span
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.2 }}
+                  style={{ display: 'block' }}
+                >
+                  Welcome to Health Management System
+                </motion.span>
               </Typography>
+              <FlowAuth />
                 
                 {/* Animated underline for the heading */}
                 <motion.div
@@ -629,6 +642,7 @@ const LandingPage: React.FC = () => {
               >
                 Key Technologies
               </Typography>
+
 
               <Grid container spacing={4}>
               {technologies.map((tech, index) => (
@@ -1617,6 +1631,15 @@ const LandingPage: React.FC = () => {
               </Grid>
             </motion.div>
 
+            {/* AI Health Agent Chat */}
+            <AIHealthAgent />
+
+            {/* Health Challenge Section */}
+            {/* <HealthChallenge /> */}
+
+            {/* Leaderboard Section */}
+            <Leaderboard />
+
             {/* Bottom Dashboard Button & CTA Banner */}
             <motion.div 
               variants={itemVariants}
@@ -1764,6 +1787,53 @@ const LandingPage: React.FC = () => {
                 </Grid>
               </Box>
             </motion.div>
+
+            {/* Flow Blockchain Integration Section */}
+            <Box sx={{ mt: 8, mb: 8 }}>
+              <Typography variant="h4" fontWeight="bold" gutterBottom color="primary">
+                Flow Blockchain Integration
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 4 }}>
+                Our platform leverages the Flow blockchain to provide secure, transparent, and user-owned health record management. Here's what you can do with Flow:
+              </Typography>
+              <Grid container spacing={4}>
+                <Grid item xs={12} md={6} lg={4}>
+                  <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                    <Avatar sx={{ bgcolor: '#00bcd4', mb: 2 }}><AccountBalanceWalletIcon /></Avatar>
+                    <Typography variant="h6" fontWeight="bold">Connect Flow Wallet</Typography>
+                    <Typography variant="body2" align="center">Securely connect your Flow wallet to access blockchain features.</Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6} lg={4}>
+                  <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                    <Avatar sx={{ bgcolor: '#2196f3', mb: 2 }}><MedicalServicesIcon /></Avatar>
+                    <Typography variant="h6" fontWeight="bold">Setup Flow Account</Typography>
+                    <Typography variant="body2" align="center">Initialize your account to mint and manage health records on Flow.</Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6} lg={4}>
+                  <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                    <Avatar sx={{ bgcolor: '#ffb300', mb: 2 }}><AddCircleIcon /></Avatar>
+                    <Typography variant="h6" fontWeight="bold">Mint Health Record</Typography>
+                    <Typography variant="body2" align="center">Turn your health record into a secure NFT for verifiable ownership.</Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6} lg={4}>
+                  <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                    <Avatar sx={{ bgcolor: '#1976d2', mb: 2 }}><ListAltIcon /></Avatar>
+                    <Typography variant="h6" fontWeight="bold">View Flow Records</Typography>
+                    <Typography variant="body2" align="center">Browse all your health records stored on the Flow blockchain.</Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6} lg={4}>
+                  <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                    <Avatar sx={{ bgcolor: '#8e24aa', mb: 2 }}><EmojiEventsIcon /></Avatar>
+                    <Typography variant="h6" fontWeight="bold">Flow Leaderboard</Typography>
+                    <Typography variant="body2" align="center">See your ranking and compete with others based on blockchain achievements.</Typography>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
           </motion.div>
         </Container>
       </Box>

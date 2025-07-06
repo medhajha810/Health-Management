@@ -1,0 +1,21 @@
+{
+  "accounts": {
+    "testnet-account": {
+      "address": "8b360107ebf9d68d",
+      "key": "4ecc75e873884e86816a4c0fc96678e3993ce35743f57ca0174686ee8693272b"
+    }
+  },
+  "networks": {
+    "testnet": "access.devnet.nodes.onflow.org:9000"
+  },
+  "deployments": {
+    "testnet": {
+      "testnet-account": [
+        "HealthRecords"
+      ]
+    }
+  },
+  "contracts": {
+    "HealthRecords": "./HR.cdc"
+  }
+}

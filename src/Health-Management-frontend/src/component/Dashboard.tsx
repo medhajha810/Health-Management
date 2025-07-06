@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Container,
@@ -24,7 +24,8 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  LinearProgress
+  LinearProgress,
+  Snackbar
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import { useAuth } from '../App';
@@ -53,6 +54,39 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import AddIcon from '@mui/icons-material/Add';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+import VideoCallIcon from '@mui/icons-material/VideoCall';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import axios from 'axios';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
+import * as fcl from '@onflow/fcl';
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import ChatIcon from '@mui/icons-material/Chat';
+import ScienceIcon from '@mui/icons-material/Science';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
+import EmailIcon from '@mui/icons-material/Email';
+import InfoIcon from '@mui/icons-material/Info';
+import AppsIcon from '@mui/icons-material/Apps';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import HealthChallenge from './HealthChallenge';
+import Papa from 'papaparse';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+import getRecordsScript from '../flow/get_records.cdc?raw';
+import setupAccountScript from '../flow/setup_account.cdc?raw';
+import mintRecordScript from '../flow/mint_record.cdc?raw';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -62,13 +96,101 @@ const Dashboard: React.FC = () => {
   const [darkMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [timeFrame, setTimeFrame] = useState('daily');
+  const [recordCount, setRecordCount] = useState<number | null>(null);
+  const [challengeCount, setChallengeCount] = useState<number | null>(null);
+  const [flowCount, setFlowCount] = useState<number | null>(null);
+  const [setupOpen, setSetupOpen] = useState(false);
+  const [mintOpen, setMintOpen] = useState(false);
+  const [recordsOpen, setRecordsOpen] = useState(false);
+  const [mintDataRef, setMintDataRef] = useState('');
+  const [minting, setMinting] = useState(false);
+  const [setupInProgress, setSetupInProgress] = useState(false);
+  const [setupResult, setSetupResult] = useState<string | null>(null);
+  const [flowRecords, setFlowRecords] = useState<{id: string, dataRef: string}[]>([]);
+  const [loadingRecords, setLoadingRecords] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [allFeaturesOpen, setAllFeaturesOpen] = useState(false);
+  const [flowError, setFlowError] = useState<string | null>(null);
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [accountSetup, setAccountSetup] = useState(false);
+  const [mintDialogOpen, setMintDialogOpen] = useState(false);
+  const [mintInput, setMintInput] = useState('');
+  const [mintStatus, setMintStatus] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [badges, setBadges] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadedPDFs, setUploadedPDFs] = useState<string[]>([]);
+  const [statsUpdated, setStatsUpdated] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate loading delay for smoother transitions
-    const timer = setTimeout(() => {
+    const fetchCounts = async () => {
+      setLoading(true);
+      try {
+        // Fetch health records
+        const token = localStorage.getItem('token');
+        const recRes = await axios.get('/api/records', { headers: { Authorization: `Bearer ${token}` } });
+        setRecordCount(recRes.data.length);
+        // Fetch challenges
+        const chalRes = await axios.get('/api/challenges', { headers: { Authorization: `Bearer ${token}` } });
+        setChallengeCount(chalRes.data.length);
+        // Fetch Flow records (if user has Flow address)
+        const flowAddress = localStorage.getItem('flowAddress');
+        if (flowAddress) {
+          const fcl = await import('@onflow/fcl');
+          const result = await fcl.query({ cadence: getRecordsScript, args: (arg, t) => [arg(flowAddress, t.Address)] });
+          setFlowCount(result.length);
+        } else {
+          setFlowCount(0);
+        }
+        // Update badges
+        const earned: string[] = [];
+        if (flowCount && flowCount > 0) earned.push('NFT Pioneer');
+        if (chalRes.data.length > 0) earned.push('Challenge Champ');
+        if (recRes.data.length > 0) earned.push('Record Keeper');
+        setBadges(earned);
+        setStatsUpdated(true);
+      } catch (error: any) {
+        if (error?.response?.status === 400 || error?.response?.status === 401) {
+          setApiError('Session expired or unauthorized. Please log in again.');
+        } else {
+          setApiError('Failed to load data. Please try again later.');
+        }
+      }
       setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
+    };
+    fetchCounts();
+    // Listen for leaderboard refresh
+    const refreshHandler = () => fetchCounts();
+    window.addEventListener('refreshLeaderboard', refreshHandler);
+    return () => {
+      window.removeEventListener('refreshLeaderboard', refreshHandler);
+    };
+  }, []);
+
+  // On mount, check wallet and account setup status
+  useEffect(() => {
+    const flowAddress = localStorage.getItem('flowAddress');
+    if (flowAddress) {
+      setWalletConnected(true);
+      setWalletAddress(flowAddress);
+      // Check if account is set up by running a lightweight query
+      (async () => {
+        try {
+          const result = await fcl.query({ cadence: getRecordsScript, args: (arg, t) => [arg(flowAddress, t.Address)] });
+          setAccountSetup(true);
+        } catch {
+          setAccountSetup(false);
+        }
+      })();
+    } else {
+      setWalletConnected(false);
+      setWalletAddress(null);
+      setAccountSetup(false);
+    }
   }, []);
 
   // Animation variants
@@ -185,6 +307,237 @@ const Dashboard: React.FC = () => {
     buttonGradient: string;
     onClick: () => void;
   }
+
+  const handleConnectFlow = async () => {
+    await fcl.authenticate();
+  };
+
+  const handleSetupFlow = async () => {
+    setSetupInProgress(true);
+    setSetupResult(null);
+    try {
+      await fcl.mutate({
+        cadence: setupAccountScript,
+        proposer: fcl.currentUser,
+        payer: fcl.currentUser,
+        authorizations: [fcl.currentUser],
+        limit: 50
+      });
+      setSetupResult('Flow account setup successful!');
+    } catch (e: any) {
+      setSetupResult('Error: ' + (e?.message || 'Failed to setup Flow account.'));
+    }
+    setSetupInProgress(false);
+  };
+
+  const handleMintRecord = async () => {
+    setMintStatus(null);
+    setMinting(true);
+    try {
+      await fcl.mutate({
+        cadence: mintRecordScript,
+        args: (arg: any, t: any) => [arg(mintInput, t.String)],
+        proposer: fcl.currentUser,
+        payer: fcl.currentUser,
+        authorizations: [fcl.currentUser],
+        limit: 50
+      });
+      setMintInput('');
+      setMintDialogOpen(false);
+      setMintStatus('Record minted successfully!');
+      // Refresh records and leaderboard
+      handleViewRecords();
+      // Optionally trigger leaderboard refresh if needed
+    } catch (e: any) {
+      setMintStatus('Mint failed: ' + (e?.message || 'Unknown error'));
+    }
+    setMinting(false);
+  };
+
+  const handleViewRecords = async () => {
+    setFlowError(null);
+    const flowAddress = localStorage.getItem('flowAddress');
+    if (!flowAddress) {
+      setFlowError('Please connect your Flow wallet before viewing records.');
+      return;
+    }
+    setLoadingRecords(true);
+    setFlowRecords([]);
+    try {
+      const result = await fcl.query({ cadence: getRecordsScript, args: (arg, t) => [arg(flowAddress, t.Address)] });
+      if (!result || result.length === 0) {
+        setSetupOpen(true);
+        setFlowError('No Flow health records found. If this is your first time, please run Setup Account and mint a record.');
+      } else {
+        setFlowRecords(result.map((obj: any) => {
+          const id = Object.keys(obj)[0];
+          return { id, dataRef: obj[id] };
+        }));
+      }
+    } catch (e: any) {
+      setFlowError('Error fetching Flow records: ' + (e?.message || 'Unknown error. Make sure your account is set up.'));
+    }
+    setLoadingRecords(false);
+  };
+
+  // List of all features for the modal
+  const allFeatures = [
+    {
+      icon: <MedicalInformationIcon sx={{ fontSize: 40, color: '#1976d2' }} />, title: 'Health Records', description: 'View, add, and manage your complete medical history.', onClick: () => navigate('/records')
+    },
+    {
+      icon: <AddCircleIcon sx={{ fontSize: 40, color: '#388e3c' }} />, title: 'Add New Record', description: 'Create and store new health records with attachments.', onClick: () => navigate('/records/new')
+    },
+    {
+      icon: <MonitorHeartIcon sx={{ fontSize: 40, color: '#d81b60' }} />, title: 'Disease Prediction', description: 'AI-powered assistant for disease prediction.', onClick: handleDiseasePrediction
+    },
+    {
+      icon: <LeaderboardIcon sx={{ fontSize: 40, color: '#ffb300' }} />, title: 'Leaderboard', description: 'See top performers in health challenges.', onClick: () => navigate('/leaderboard')
+    },
+    {
+      icon: <FitnessCenterIcon sx={{ fontSize: 40, color: '#00897b' }} />, title: 'Health Challenges', description: 'Participate in daily and weekly health challenges.', onClick: () => navigate('/challenges')
+    },
+    {
+      icon: <VideocamIcon sx={{ fontSize: 40, color: '#1976d2' }} />, title: 'TeleHealth', description: 'Access telehealth video consultations.', onClick: () => navigate('/telehealth')
+    },
+    {
+      icon: <NotificationsActiveIcon sx={{ fontSize: 40, color: '#f44336' }} />, title: 'Notifications', description: 'View important health notifications.', onClick: () => navigate('/notifications')
+    },
+    {
+      icon: <AnalyticsIcon sx={{ fontSize: 40, color: '#3949ab' }} />, title: 'Health Analytics', description: 'Visualize and analyze your health data.', onClick: () => navigate('/analytics')
+    },
+    {
+      icon: <TipsAndUpdatesIcon sx={{ fontSize: 40, color: '#ff9800' }} />, title: 'Health Tips', description: 'Get daily health and wellness tips.', onClick: () => navigate('/tips')
+    },
+    {
+      icon: <ChatIcon sx={{ fontSize: 40, color: '#00bcd4' }} />, title: 'AI Health Agent', description: 'Chat with an AI health assistant.', onClick: () => navigate('/ai-agent')
+    },
+    {
+      icon: <ScienceIcon sx={{ fontSize: 40, color: '#8e24aa' }} />, title: 'Symptom Analyzer', description: 'Analyze symptoms and get suggestions.', onClick: () => navigate('/symptom-analyzer')
+    },
+    {
+      icon: <WbSunnyIcon sx={{ fontSize: 40, color: '#0288d1' }} />, title: 'Weather Suggestions', description: 'Get health suggestions based on weather.', onClick: () => navigate('/weather-suggestions')
+    },
+    {
+      icon: <LocalPharmacyIcon sx={{ fontSize: 40, color: '#43a047' }} />, title: 'Medical Recommendations', description: 'Personalized medical recommendations.', onClick: () => navigate('/medical-suggestions')
+    },
+    {
+      icon: <AccountBalanceWalletIcon sx={{ fontSize: 40, color: '#4caf50' }} />, title: 'Flow Wallet', description: 'Connect and manage your Flow blockchain wallet.', onClick: handleConnectFlow
+    },
+    {
+      icon: <BarChartIcon sx={{ fontSize: 40, color: '#1976d2' }} />, title: 'Data Visualization', description: 'Advanced health data visualization tools.', onClick: () => navigate('/visualization')
+    },
+    {
+      icon: <PersonIcon sx={{ fontSize: 40, color: '#6a1b9a' }} />, title: 'Profile', description: 'Manage your user profile and settings.', onClick: () => navigate('/profile')
+    },
+    {
+      icon: <HelpOutlineIcon sx={{ fontSize: 40, color: '#607d8b' }} />, title: 'FAQ', description: 'Frequently asked questions.', onClick: () => navigate('/faq')
+    },
+    {
+      icon: <EmailIcon sx={{ fontSize: 40, color: '#009688' }} />, title: 'Contact', description: 'Contact support and feedback.', onClick: () => navigate('/contact')
+    },
+    {
+      icon: <InfoIcon sx={{ fontSize: 40, color: '#3f51b5' }} />, title: 'About', description: 'Learn more about this platform.', onClick: () => navigate('/about')
+    }
+  ];
+
+  // Export records as CSV
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      // Fetch records (from backend or state)
+      const token = localStorage.getItem('token');
+      const res = await axios.get('/api/records', { headers: { Authorization: `Bearer ${token}` } });
+      const records = res.data;
+      // Get user profile info
+      const userProfiles = JSON.parse(localStorage.getItem('userProfiles') || '[]');
+      const currentProfileId = localStorage.getItem('currentProfileId');
+      const profile = userProfiles.find((p: any) => p.id === currentProfileId) || userProfiles[0] || {};
+      // Get badges
+      const badgeList = badges && badges.length ? badges : [];
+      // Get challenge count
+      const safeChallengeCount = typeof challengeCount === 'number' ? challengeCount : 0;
+      // Create PDF
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text('Health Management - Medical History', 14, 18);
+      doc.setFontSize(12);
+      doc.text(`Name: ${profile.name || ''}`, 14, 28);
+      if (profile.email) doc.text(`Email: ${profile.email}`, 14, 36);
+      if (profile.phone) doc.text(`Phone: ${profile.phone}`, 14, 44);
+      if (profile.birthDate) doc.text(`Birth Date: ${profile.birthDate}`, 14, 52);
+      if (profile.bloodType) doc.text(`Blood Type: ${profile.bloodType}`, 14, 60);
+      doc.text(`Badges: ${badgeList.join(', ') || 'None'}`, 14, 68);
+      doc.text(`Challenges Completed: ${safeChallengeCount}`, 14, 76);
+      doc.text(' ', 14, 84);
+      // Add records table
+      if (records && records.length) {
+        const tableData = records.map((r: any) => [r.date, r.record_type, r.doctor, r.description]);
+        doc.autoTable({
+          head: [['Date', 'Type', 'Doctor', 'Description']],
+          body: tableData,
+          startY: 90
+        });
+      } else {
+        doc.text('No health records found.', 14, 90);
+      }
+      doc.save('medical_history.pdf');
+    } catch (e) {
+      setApiError('Failed to export records.');
+    }
+    setExporting(false);
+  };
+
+  // Import records from CSV/JSON
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImportError(null);
+    setImporting(true);
+    try {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (file.type === 'application/pdf') {
+        const token = localStorage.getItem('token');
+        const formData = new FormData();
+        formData.append('pdf', file);
+        await axios.post('/api/records/upload-pdf', formData, { headers: { Authorization: `Bearer ${token}` } });
+        setSuccessMessage && setSuccessMessage('PDF uploaded successfully!');
+        await fetchPDFs();
+        setImporting(false);
+        return;
+      }
+      let records;
+      if (file.name.endsWith('.csv')) {
+        records = Papa.parse(await file.text(), { header: true }).data;
+      } else {
+        records = JSON.parse(await file.text());
+      }
+      // Send to backend or merge with state
+      const token = localStorage.getItem('token');
+      await axios.post('/api/records/import', records, { headers: { Authorization: `Bearer ${token}` } });
+      setSuccessMessage && setSuccessMessage('Records imported successfully!');
+      // Optionally refresh records
+    } catch (e: any) {
+      setImportError('Failed to import records: ' + (e?.message || 'Invalid file.'));
+    }
+    setImporting(false);
+  };
+
+  // Sample badge logic
+  useEffect(() => {
+    const earned: string[] = [];
+    if (flowCount && flowCount > 0) earned.push('NFT Pioneer');
+    if (challengeCount && challengeCount > 0) earned.push('Challenge Champ');
+    if (recordCount && recordCount > 0) earned.push('Record Keeper');
+    setBadges(earned);
+  }, [flowCount, challengeCount, recordCount]);
+
+  const fetchPDFs = async () => {
+    const token = localStorage.getItem('token');
+    const res = await axios.get('/api/records/list-pdfs', { headers: { Authorization: `Bearer ${token}` } });
+    setUploadedPDFs(res.data);
+  };
+
+  useEffect(() => { fetchPDFs(); }, []);
 
   return (
     <Container 
@@ -676,6 +1029,216 @@ const Dashboard: React.FC = () => {
               </CardContent>
             </Card>
           </motion.div>
+        </Grid>
+      </Grid>
+
+      {/* --- MOVE FLOW BLOCKCHAIN FEATURES HERE --- */}
+      <motion.div variants={itemVariants}>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', mt: 6, mb: 3, color: darkMode ? '#90caf9' : '#1976d2' }}>
+          Flow Blockchain Features
+        </Typography>
+      </motion.div>
+      <Grid container spacing={3} sx={{ mb: 5 }}>
+        {/* Connect Wallet */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #4caf50 0%, #00bcd4 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#00bcd4', mr: 2 }}><AccountBalanceWalletIcon /></Avatar>
+                <Typography variant="h6">Connect Flow Wallet</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Securely connect your Flow blockchain wallet to enable blockchain-powered health features.
+              </Typography>
+              <Button variant="contained" color="primary" onClick={handleConnectFlow} fullWidth>Connect Wallet</Button>
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* Setup Account */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #00bcd4 0%, #2196f3 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#2196f3', mr: 2 }}><MedicalServicesIcon /></Avatar>
+                <Typography variant="h6">Setup Flow Account</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Initialize your Flow account to start minting and managing health records on the blockchain.
+              </Typography>
+              <Button variant="contained" color="primary" onClick={handleSetupFlow} fullWidth>Setup Account</Button>
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* Mint Health Record */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #ff9800 0%, #ffb300 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#ffb300', mr: 2 }}><AddCircleIcon /></Avatar>
+                <Typography variant="h6">Mint Health Record</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Mint your health record as an NFT on Flow for secure, verifiable ownership and sharing.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                {walletConnected && (
+                  <Chip label={`Wallet Connected: ${walletAddress?.slice(0, 6)}...${walletAddress?.slice(-4)}`} color="success" />
+                )}
+                {accountSetup && (
+                  <Chip label="Account Setup Completed" color="primary" />
+                )}
+              </Box>
+              <Button variant="contained" color="primary" onClick={() => setMintDialogOpen(true)} startIcon={<AddCircleIcon />}>Mint Record</Button>
+              <Dialog open={mintDialogOpen} onClose={() => setMintDialogOpen(false)}>
+                <DialogTitle>Mint New Health Record</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Record Data (Reference)"
+                    type="text"
+                    fullWidth
+                    value={mintInput}
+                    onChange={e => setMintInput(e.target.value)}
+                    disabled={minting}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setMintDialogOpen(false)} color="secondary">Cancel</Button>
+                  <Button onClick={handleMintRecord} color="primary" variant="contained" disabled={minting || !mintInput}>
+                    {minting ? <CircularProgress size={20} /> : 'Mint'}
+                  </Button>
+                </DialogActions>
+              </Dialog>
+              <Snackbar open={!!mintStatus} autoHideDuration={6000} onClose={() => setMintStatus(null)}>
+                <Alert onClose={() => setMintStatus(null)} severity={mintStatus?.startsWith('Record minted') ? 'success' : 'error'} sx={{ width: '100%' }}>
+                  {mintStatus}
+                </Alert>
+              </Snackbar>
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* View Flow Records */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #1976d2 0%, #00bcd4 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#1976d2', mr: 2 }}><ListAltIcon /></Avatar>
+                <Typography variant="h6">View Flow Records</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Browse all your health records stored on the Flow blockchain, anytime, anywhere.
+              </Typography>
+              <Button variant="contained" color="primary" onClick={() => navigate('/records')} fullWidth>View Records</Button>
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* Flow Leaderboard */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #8e24aa 0%, #ffb300 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#8e24aa', mr: 2 }}><EmojiEventsIcon /></Avatar>
+                <Typography variant="h6">Flow Leaderboard</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Compete with others and see your ranking based on blockchain health achievements.
+              </Typography>
+              <Button variant="contained" color="primary" onClick={() => navigate('/leaderboard')} fullWidth>View Leaderboard</Button>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      <motion.div variants={itemVariants}>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', mt: 6, mb: 3, color: darkMode ? '#90caf9' : '#1976d2' }}>
+          Breakthrough Flow Features
+        </Typography>
+      </motion.div>
+      <Grid container spacing={3} sx={{ mb: 5 }}>
+        {/* AI Health Agent */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #00bcd4 0%, #43e97b 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#00bcd4', mr: 2 }}><ChatIcon /></Avatar>
+                <Typography variant="h6">AI Health Agent</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Your personal AI assistant manages your health, schedules, and even helps recover your account using Flow's Account Linking.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* NFT Health Records */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #ffb300 0%, #ff6f00 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#ffb300', mr: 2 }}><AddCircleIcon /></Avatar>
+                <Typography variant="h6">NFT Health Records</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Own your health data as NFTs—share, revoke, or monetize with a tap.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* Flow Leaderboard & Challenges */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #8e24aa 0%, #ffb300 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#8e24aa', mr: 2 }}><EmojiEventsIcon /></Avatar>
+                <Typography variant="h6">Flow Leaderboard & Challenges</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Compete globally, win rewards, and prove your achievements on-chain—powered by Flow's VRF for fairness.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* Walletless Onboarding */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #1976d2 0%, #00bcd4 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#1976d2', mr: 2 }}><AccountBalanceWalletIcon /></Avatar>
+                <Typography variant="h6">Walletless Onboarding</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Start using the app instantly—no wallet required. Upgrade to full control anytime.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* Sponsored Transactions */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #43a047 0%, #00bcd4 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#43a047', mr: 2 }}><MedicalServicesIcon /></Avatar>
+                <Typography variant="h6">Sponsored Transactions</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Enjoy a seamless, gasless experience—transactions are sponsored or batched for you.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* Composable Health Data */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ ...cardStyle, background: 'linear-gradient(135deg, #00bcd4 0%, #8e24aa 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#00bcd4', mr: 2 }}><ScienceIcon /></Avatar>
+                <Typography variant="h6">Composable Health Data</Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Permissionlessly connect your health data to other apps, research, or services—unlocking new value.
+              </Typography>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
 
@@ -3267,6 +3830,109 @@ const Dashboard: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
+
+      {apiError && (
+        <Box sx={{ my: 2 }}>
+          <Typography color="error" variant="body1">{apiError}</Typography>
+          <Button variant="contained" color="primary" onClick={() => navigate('/login')}>Go to Login</Button>
+        </Box>
+      )}
+
+      {/* All Features Modal */}
+      <Dialog open={allFeaturesOpen} onClose={() => setAllFeaturesOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box display="flex" alignItems="center" gap={1}>
+            <AppsIcon color="primary" />
+            <Typography variant="h6" fontWeight="bold">All Features</Typography>
+          </Box>
+          <IconButton onClick={() => setAllFeaturesOpen(false)}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Grid container spacing={3}>
+            {allFeatures.map((feature, idx) => (
+              <Grid item xs={12} sm={6} md={4} key={idx}>
+                <Card sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 220 }}>
+                  <Box mb={2}>{feature.icon}</Box>
+                  <Typography variant="h6" fontWeight="bold" align="center">{feature.title}</Typography>
+                  <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>{feature.description}</Typography>
+                  <Button variant="contained" color="primary" onClick={() => { setAllFeaturesOpen(false); feature.onClick(); }}>
+                    Go
+                  </Button>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </DialogContent>
+      </Dialog>
+
+      <Snackbar open={!!setupResult} autoHideDuration={6000} onClose={() => setSetupResult(null)}>
+        <Alert onClose={() => setSetupResult(null)} severity={setupResult?.startsWith('Error') ? 'error' : 'success'} sx={{ width: '100%' }}>
+          {setupResult}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={!!flowError} autoHideDuration={6000} onClose={() => setFlowError(null)}>
+        <Alert onClose={() => setFlowError(null)} severity="error" sx={{ width: '100%' }}>
+          {flowError}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={statsUpdated} autoHideDuration={3000} onClose={() => setStatsUpdated(false)}>
+        <Alert onClose={() => setStatsUpdated(false)} severity="success" sx={{ width: '100%' }}>
+          Your stats have been updated!
+        </Alert>
+      </Snackbar>
+
+      <motion.div variants={itemVariants}>
+        <Box sx={{ my: 4 }}>
+          <HealthChallenge />
+        </Box>
+      </motion.div>
+
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: 'success.main' }}>Your Badges</Typography>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+          {badges.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">No badges earned yet. Mint a record, complete a challenge, or add health data to earn badges!</Typography>
+          ) : (
+            badges.map(badge => (
+              <Chip key={badge} label={badge} color="success" icon={<EmojiEventsIcon />} sx={{ fontSize: '1rem', p: 2 }} />
+            ))
+          )}
+        </Box>
+      </Box>
+
+      <Box sx={{ mt: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleExport}
+            disabled={exporting}
+          >
+            Export Medical History (PDF)
+          </Button>
+          <Button
+            variant="contained"
+            component="label"
+            color="secondary"
+            disabled={importing}
+          >
+            Import PDF
+            <input type="file" accept="application/pdf,.csv,.json" hidden onChange={handleImport} />
+          </Button>
+        </Box>
+        {uploadedPDFs.length > 0 && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle1">Your Uploaded PDFs:</Typography>
+            {uploadedPDFs.map(filename => (
+              <Button key={filename} href={`/api/records/download-pdf/${filename}`} target="_blank" sx={{ m: 1 }}>
+                {filename.replace(/^user_\d+_/, '')}
+              </Button>
+            ))}
+          </Box>
+        )}
+      </Box>
     </Container>
   );
 };

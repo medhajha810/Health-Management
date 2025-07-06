@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "src/healthchain_backend",
+    "src/Health-Management-backend"
 ]
 resolver = "2"

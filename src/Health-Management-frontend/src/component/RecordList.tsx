@@ -41,6 +41,8 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 import HelpIcon from '@mui/icons-material/Help';
 import { motion } from 'framer-motion';
+import * as fcl from "@onflow/fcl";
+import getRecordsScript from '../flow/get_records.cdc?raw';
 
 interface HealthRecord {
   id: string;
@@ -92,6 +94,27 @@ const RecordList: React.FC = () => {
       setTimeout(animateRows, 300);
     }
   }, [actor, location.pathname]);
+
+  const fetchFlowRecords = async (userAddress: string) => {
+    try {
+      const result = await fcl.query({
+        cadence: getRecordsScript,
+        args: (arg, t) => [arg(userAddress, t.Address)]
+      });
+      // Map Flow records to HealthRecord format if needed
+      return (result || []).map((r: any) => ({
+        id: r.id || r.uuid || r.dataRef || Math.random().toString(36).substr(2, 9),
+        date: r.date || Date.now(),
+        record_type: r.recordType || r.record_type || 'Flow',
+        description: r.description || '',
+        doctor: r.doctor || 'Blockchain',
+        patient: r.patient || userAddress
+      }));
+    } catch (e) {
+      console.error('Error fetching Flow records:', e);
+      return [];
+    }
+  };
 
   const fetchRecords = async () => {
     console.log('fetchRecords function called');
@@ -166,8 +189,19 @@ const RecordList: React.FC = () => {
       }
       
       // Combine records
-      console.log('Combining backend and local records');
-      const combinedRecords = [...backendRecords, ...localRecords];
+      let combinedRecords = [...backendRecords, ...localRecords];
+      // Fetch Flow records if user is logged in
+      let flowRecords: HealthRecord[] = [];
+      try {
+        const user = await fcl.currentUser().snapshot();
+        if (user && user.addr) {
+          flowRecords = await fetchFlowRecords(user.addr);
+          combinedRecords = [...combinedRecords, ...flowRecords];
+        }
+      } catch (e) {
+        console.error('Error fetching Flow records for user:', e);
+      }
+      
       console.log('Combined records (before deduplication):', combinedRecords);
       console.log('Number of combined records:', combinedRecords.length);
       

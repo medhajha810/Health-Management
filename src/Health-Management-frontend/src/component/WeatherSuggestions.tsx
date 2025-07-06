@@ -48,36 +48,6 @@ const WeatherSuggestions: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedTips, setSelectedTips] = useState<WeatherSuggestion | null>(null);
 
-  // Mock weather data - in a real application, this would come from a weather API
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      // Generate random weather for demo purposes
-      const conditions = ['sunny', 'rainy', 'hot', 'cold', 'humid', 'windy', 'stormy', 'snowy', 'polluted', 'foggy'];
-      const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
-      
-      const mockWeather = {
-        location: 'New Delhi, India',
-        temperature: Math.floor(Math.random() * 30) + 10, // 10-40°C
-        condition: randomCondition,
-        humidity: Math.floor(Math.random() * 60) + 30, // 30-90%
-        windSpeed: Math.floor(Math.random() * 20) + 1, // 1-21 km/h
-        uvIndex: Math.floor(Math.random() * 10) + 1, // 1-11
-        aqi: Math.floor(Math.random() * 300) + 20, // 20-320
-      };
-      
-      setWeather(mockWeather);
-      setLoading(false);
-    }, 1500);
-  }, []);
-
-  useEffect(() => {
-    if (weather) {
-      const matchedSuggestion = weatherSuggestions.find(s => s.condition === weather.condition);
-      setSelectedTips(matchedSuggestion || null);
-    }
-  }, [weather]);
-
   // Weather-based health suggestions - these are legitimate health tips based on weather conditions
   const weatherSuggestions: WeatherSuggestion[] = [
     {

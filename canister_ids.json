@@ -2,6 +2,9 @@
   "Health-Management-frontend": {
     "ic": "p2x5t-yqaaa-aaaah-arcma-cai"
   },
+  "health_management_backend": {
+    "ic": "x6j4u-iyaaa-aaaah-arhka-cai"
+  },
   "healthchain_backend": {
     "ic": "p5w3h-viaaa-aaaah-arcmq-cai"
   }
